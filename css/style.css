@@ -1,9 +1,23 @@
-div#map_canvas
+html
 {
+	height: 100%
+}
+
+body
+{
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+	font-size: 11px;
+}
+
+#map_canvas
+{
+	height: 100%;
 	z-index: 100;
 }
 
-div#adminControls
+#adminControls
 {
 	position: absolute;
 	bottom: 20px;
@@ -11,28 +25,25 @@ div#adminControls
 	z-index: 200;
 }
 
-div#input
+#dump
 {
-	margin-left: 1em;
+	margin: 0 auto;
+	width: 98%;
+	height: 98%;
 }
 
-
-div#dumpDialog
-{
-}
-textarea#dump
-{
-margin: 0 auto;
-width: 98%;
-height: 98%;
-}
-
-div#searchBox
+#searchBox
 {
 	position: absolute;
 	z-index: 200;
 	top: 20px;
 	right: 20px;
+	font-size: 16px;
+}
+
+#search
+{
+	padding: 4px;
 }
 
 .ui-autocomplete

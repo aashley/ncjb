@@ -1,190 +1,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-<style type="text/css">
-	html { height: 100% }
-	body { height: 100%; margin: 0px; padding: 0px }
-	#map_canvas { height: 100% }
-</style>
-<title>EVE NC JB Map</title>
-<link rel="stylesheet" href="css/custom-theme/jquery-ui-1.8.4.custom.css" />
-<link rel="stylesheet" href="css/style.css" />
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Northern Coalition Jump Bridge Map</title>
+<link rel="stylesheet" href="css/ncjb/jquery-ui-1.8.4.custom.css">
+<link rel="stylesheet" href="css/style.css">
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.8.4.custom.min.js"></script>
+<script type="text/javascript" src="js/jquery.cookie.js"></script>
 <script type="text/javascript" src="js/json2.js"></script>
 <script type="text/javascript" src="js/systems.js"></script>
-<script type="text/javascript">
-var map = null;
-var systemObjects = {};
-var systemNames = [];
-var activePin = null;
-
-var editMode = false;
-
-$(document).ready(function ()
-{
-
-
-	// Map Initialisation
-	var mapTypeOptions = {
-		getTileUrl: function(coord, zoom) {
-			return zoom + "/tile_" + coord.x + '_' + coord.y + ".png";
-		},
-		tileSize: new google.maps.Size(256,256),
-		isPng: true,
-		name: "NC JB",
-		minZoom: 2,
-		maxZoom: 5,
-		alt: "Northern Coalition Jump Bridge Network"
-	};
-
-	var eveMapType = new google.maps.ImageMapType(mapTypeOptions);
-
-	var myLatlng = new google.maps.LatLng(0,0);
-	var myOptions = {
-		backgroundColor: "#000000",
-		zoom: 2,
-		center: myLatlng,
-		disableDefaultUI: true,
-		navigationControl: true,
-		mapTypeControlOptions: {
-			mapTypeIds: ['ncjb'],
-		}
-	}
-	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-
-	map.mapTypes.set('ncjb', eveMapType);
-	map.setMapTypeId('ncjb');
-
-	google.maps.event.addListener(map, 'click', function(event)
-		{
-			if(	editMode )
-			{
-				placeMarker(event.latLng);
-			}
-		});
-
-	// Load predefined Systems
-	for( i = 0; i < systems.length; i++ )
-	{
-		var system = systems[i];
-		var latLng = new google.maps.LatLng(system[1], system[2]);
-		var marker = new google.maps.Marker({
-				position: latLng,
-				title: system[0],
-				draggable: editMode
-			});
-
-		systemObjects[system[0]] = marker;
-		systemNames.push(system[0]);
-	}
-
-
-	// Setup Auto Complete on Search box
-	$("#search").autocomplete({
-			source: systemNames,
-			select: function(event, ui)
-			{
-				if( typeof activePin == "object" && activePin != null )
-				{
-					activePin.setMap(null);
-				}
-
-				var marker = systemObjects[ui.item.value];
-
-				map.panTo(marker.position);
-				map.setZoom(5);
-				marker.setMap(map);
-				activePin = marker;
-			}
-		});
-
-	// Setup Editor
-	$("div#adminControls input, div#dumpDialog").hide();
-	$("input#enableEdit").click(function(e)
-		{
-			editMode = true;
-
-			$.each(systemObjects, function(systemName, systemMarker)
-				{
-					systemMarker.setMap(map);
-					systemMarker.setDraggable(true);
-				});
-
-			$("input#dumpSystems, input#closeEdit").show();
-			$("input#enableEdit").hide();
-		})
-		.show();
-	$("input#closeEdit").click(function(e)
-		{
-			editMode = false;
-
-			systemNames = [];
-			$.each(systemObjects, function(systemName, systemMarker)
-				{
-					systemMarker.setMap(null);
-					systemMarker.setDraggable(false);
-					systemNames.push(systemName);
-				});
-			$("#search").autocomplete("option", "source", systemNames);
-
-			$("input#dumpSystems, input#closeEdit").hide();
-			$("input#enableEdit").show();
-		})
-	$("input#dumpSystems").click(function(e)
-		{
-			systems = [];
-			$.each(systemObjects, function(systemName, systemMarker)
-				{
-					system = [
-						systemName,
-						systemMarker.position.lat(),
-						systemMarker.position.lng()
-						];
-					systems.push(system);
-				});
-			$('textarea#dump').val(JSON.stringify(systems));
-
-			$('div#dumpDialog').dialog({
-				modal: true,
-				title: "Dump of system data",
-				width: 600,
-				height: 400,
-				buttons: {}
-			});
-		});
-});
-
-function placeMarker(location)
-{
-	var systemName = prompt("Enter name of system", "");
-	var marker = new google.maps.Marker({
-			position: location,
-			map: map,
-			title: systemName,
-			draggable: true
-	});
-
-	systemObjects[systemName] = marker;
-}
-
-</script>
+<script type="text/javascript" src="js/common.js"></script>
 </head>
 <body>
 	<div id="map_canvas"></div>
 	<div id="adminControls">
-		<input class="ui-button" type="button" id="enableEdit" value="Edit Systems" />
-		<input class="ui-button" type="button" id="dumpSystems" value="Dump Systems" />
-		<input class="ui-button" type="button" id="closeEdit" value="Close Editing" />
+		<button id="enableEdit">Edit Systems</button>
+		<button id="dumpSystems">Dump Systems</button>
+		<button id="closeEdit">Close Editing</button>
 	</div>
 	<div id="dumpDialog">
 		<textarea id="dump"></textarea>
 	</div>
-	<div id="searchBox" class="ui-widget">
-		<input id="search" />
+	<div id="searchBox">
+		<input id="search" class="ui-state-default ui-corner-all">
 	</div>
 </body>
 </html>
