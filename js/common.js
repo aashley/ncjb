@@ -97,7 +97,17 @@ $(document).ready(function ()
 				marker.setMap(map);
 				activePin = marker;
 			}
-		});
+		}).keyup(function(event)
+			{
+				if( typeof systemObjects[$(event.target).val()] == 'undefined' )
+				{
+					if( activePin != null )
+					{
+						activePin.setMap(null);
+						activePin = null;
+					}
+				}
+			});
 
 	// Setup Editor
 	$("div#adminControls button").button().hide();
