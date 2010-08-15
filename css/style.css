@@ -1,0 +1,42 @@
+div#map_canvas
+{
+	z-index: 100;
+}
+
+div#adminControls
+{
+	position: absolute;
+	bottom: 20px;
+	right: 20px;
+	z-index: 200;
+}
+
+div#input
+{
+	margin-left: 1em;
+}
+
+
+div#dumpDialog
+{
+}
+textarea#dump
+{
+margin: 0 auto;
+width: 98%;
+height: 98%;
+}
+
+div#searchBox
+{
+	position: absolute;
+	z-index: 200;
+	top: 20px;
+	right: 20px;
+}
+
+.ui-autocomplete
+{
+	max-height: 200px;
+	overflow-y: auto;
+}
