@@ -127,6 +127,9 @@ $(document).ready(function ()
 
 			$("button#dumpSystems, button#closeEdit").show();
 			$("button#enableEdit").hide();
+
+			// Record action in GA
+			_gaq.push(['_trackPageview', '/edit/start/']);
 		})
 		.show();
 	$("button#closeEdit").click(function(e)
@@ -144,6 +147,9 @@ $(document).ready(function ()
 
 			$("button#dumpSystems, button#closeEdit").hide();
 			$("button#enableEdit").show();
+
+			// Record action in GA
+			_gaq.push(['_trackPageview', '/edit/stop/']);
 		})
 	$("button#dumpSystems").click(function(e)
 		{
@@ -166,6 +172,9 @@ $(document).ready(function ()
 				height: 400,
 				buttons: {}
 			});
+
+			// Record action in GA
+			_gaq.push(['_trackPageview', '/edit/dump/']);
 		});
 });
 
