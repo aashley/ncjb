@@ -96,6 +96,9 @@ $(document).ready(function ()
 				map.setZoom(5);
 				marker.setMap(map);
 				activePin = marker;
+
+				// Record selection in GA
+				_gaq.push(['_trackPageview', '/systems/' + ui.item.value]);
 			}
 		}).keyup(function(event)
 			{
