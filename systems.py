@@ -5,23 +5,32 @@ import pprint
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
+from google.appengine.api import memcache
 
 class Systems(webapp.RequestHandler):
 	def get(self):
 		self.response.headers['Content-Type'] = 'text/javascript'
-		self.response.out.write("var systems = [")
-		first = True
 
-		systems = mapcore.System.gql("ORDER BY name")
+		output = memcache.get("systemsFeed")
+		if output is None:
+			output = "var systems = ["
+			first = True
 
-		for system in systems:
-			if first:
-				first = False
-			else:
-				self.response.out.write(",\n")
-			self.response.out.write("['%s', %.22f, %.22f]" % (system.name, system.lat, system.lng))
+			systems = mapcore.System.gql("ORDER BY name")
 
-		self.response.out.write("\n]")
+			for system in systems:
+				if first:
+					first = False
+				else:
+					output += ",\n"
+				output += "['%s', %.22f, %.22f]" % (system.name, system.lat, system.lng)
+
+			output += "\n]"
+
+			if not memcache.add("systemsFeed", output, 3600):
+				logging.error("Storing systemsFeed in memcache failed.")
+		self.response.out.write(output)
+
 
 
 class Generate(webapp.RequestHandler):

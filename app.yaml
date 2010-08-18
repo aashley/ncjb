@@ -1,5 +1,5 @@
 application: nc-jb-map
-version: 2
+version: 3
 runtime: python
 api_version: 1
 
@@ -25,3 +25,6 @@ handlers:
 
 - url: /.*
   script: map.py
+
+derived_file_type:
+- python_precompiled
