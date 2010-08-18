@@ -13,12 +13,6 @@ handlers:
 - url: /tiles
   static_dir: tiles
 
-- url: /generate
-  script: systems.py
-
-- url: /systems
-  script: systems.py
-
 - url: /remote_api
   script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
   login: admin

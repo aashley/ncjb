@@ -3,8 +3,6 @@ var systemObjects = {};
 var systemNames = [];
 var activePin = null;
 
-var editMode = false;
-
 $(document).ready(function ()
 {
 	// Map Initialisation
@@ -48,14 +46,6 @@ $(document).ready(function ()
 		map.setZoom(parseInt($.cookie('ncjb_zoom')));
 	}
 
-	google.maps.event.addListener(map, 'click', function(event)
-		{
-			if(	editMode )
-			{
-				placeMarker(event.latLng);
-			}
-		});
-
 	google.maps.event.addListener(map, 'center_changed', function()
 		{
 			var center = map.getCenter();
@@ -72,7 +62,7 @@ $(document).ready(function ()
 		var marker = new google.maps.Marker({
 				position: latLng,
 				title: system[0],
-				draggable: editMode
+				draggable: false
 			});
 
 		systemObjects[system[0]] = marker;
@@ -111,84 +101,4 @@ $(document).ready(function ()
 					}
 				}
 			});
-
-	// Setup Editor
-	$("div#adminControls button").button().hide();
-	$("div#dumpDialog").hide();
-	$("button#enableEdit").click(function(e)
-		{
-			editMode = true;
-
-			$.each(systemObjects, function(systemName, systemMarker)
-				{
-					systemMarker.setMap(map);
-					systemMarker.setDraggable(true);
-				});
-
-			$("button#dumpSystems, button#closeEdit").show();
-			$("button#enableEdit").hide();
-
-			// Record action in GA
-			_gaq.push(['_trackPageview', '/edit/start/']);
-		})
-		.show();
-	$("button#closeEdit").click(function(e)
-		{
-			editMode = false;
-
-			systemNames = [];
-			$.each(systemObjects, function(systemName, systemMarker)
-				{
-					systemMarker.setMap(null);
-					systemMarker.setDraggable(false);
-					systemNames.push(systemName);
-				});
-			$("#search").autocomplete("option", "source", systemNames);
-
-			$("button#dumpSystems, button#closeEdit").hide();
-			$("button#enableEdit").show();
-
-			// Record action in GA
-			_gaq.push(['_trackPageview', '/edit/stop/']);
-		})
-	$("button#dumpSystems").click(function(e)
-		{
-			systems = [];
-			$.each(systemObjects, function(systemName, systemMarker)
-				{
-					system = [
-						systemName,
-						systemMarker.position.lat(),
-						systemMarker.position.lng()
-						];
-					systems.push(system);
-				});
-			$('textarea#dump').val(JSON.stringify(systems));
-
-			$('div#dumpDialog').dialog({
-				modal: true,
-				title: "Dump of system data",
-				width: 600,
-				height: 400,
-				buttons: {}
-			});
-
-			// Record action in GA
-			_gaq.push(['_trackPageview', '/edit/dump/']);
-		});
 });
-
-function placeMarker(location)
-{
-	var systemName = prompt("Enter name of system", "");
-	var marker = new google.maps.Marker({
-			position: location,
-			map: map,
-			title: systemName,
-			draggable: true
-	});
-
-	systemObjects[systemName] = marker;
-}
-
-
