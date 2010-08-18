@@ -24,7 +24,7 @@ cut()
 
 	X=0;
 	Y=0;
-	mkdir -p $ZOOMLEVEL
+	mkdir -p tiles/$ZOOMLEVEL
 	for (( c=0; c<$TILECOUNT; c++ ))
 	do
 		if [ $X -eq $PERROW ];
@@ -34,8 +34,8 @@ cut()
 		fi
 
 #		echo "Tile: $c X: $X Y: $Y";
-		mv tile_${c}.png $ZOOMLEVEL/tile_${X}_${Y}.png;
-		mogrify -colors 256 -page 256x256 +profile "xmp" $ZOOMLEVEL/tile_${X}_${Y}.png;
+		mv tile_${c}.png tiles/$ZOOMLEVEL/tile_${X}_${Y}.png;
+		mogrify -colors 256 -page 256x256 +profile "xmp" tiles/$ZOOMLEVEL/tile_${X}_${Y}.png;
 
 		X=$(( $X+1 ));
 	done
@@ -59,3 +59,5 @@ do
 	convert base.png -resize ${zSize}x${zSize} base_resized.png
 	mv -f base_resized.png base.png
 done
+
+rm base.jpg base.png

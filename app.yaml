@@ -1,0 +1,27 @@
+application: nc-jb-map
+version: 2
+runtime: python
+api_version: 1
+
+handlers:
+- url: /css
+  static_dir: css
+
+- url: /js
+  static_dir: js
+
+- url: /tiles
+  static_dir: tiles
+
+- url: /generate
+  script: systems.py
+
+- url: /systems
+  script: systems.py
+
+- url: /remote_api
+  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
+  login: admin
+
+- url: /.*
+  script: map.py

@@ -10,7 +10,7 @@ $(document).ready(function ()
 	// Map Initialisation
 	var mapTypeOptions = {
 		getTileUrl: function(coord, zoom) {
-			return zoom + "/tile_" + coord.x + '_' + coord.y + ".png";
+			return "tiles/" + zoom + "/tile_" + coord.x + '_' + coord.y + ".png";
 		},
 		tileSize: new google.maps.Size(256,256),
 		isPng: true,
