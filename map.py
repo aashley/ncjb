@@ -42,7 +42,7 @@ class SystemsFeed(webapp.RequestHandler):
 			output = "var systems = ["
 			first = True
 
-			systems = mapcore.System.gql("ORDER BY name")
+			systems = System.gql("ORDER BY name")
 
 			for system in systems:
 				if first:
@@ -241,9 +241,9 @@ class Generate(webapp.RequestHandler):
 
 		self.response.headers['Content-Type'] = 'text/plain'
 		for rawSystem in rawSystems:
-			query = mapcore.System.gql("WHERE name = :name", name=rawSystem[0])
+			query = System.gql("WHERE name = :name", name=rawSystem[0])
 			if query.count() == 0:
-				system = mapcore.System(name=rawSystem[0],
+				system = System(name=rawSystem[0],
 						lat=float(rawSystem[1]),
 						lng=float(rawSystem[2]))
 			else:
