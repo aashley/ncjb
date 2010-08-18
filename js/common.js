@@ -1,10 +1,32 @@
-var map = null;
-var systemObjects = {};
-var systemNames = [];
-var activePin = null;
+var map = null,
+	systemObjects = {},
+	systemNames = [],
+	activePin = null,
+	defaultIcon = null,
+	iconShape = {
+		coord: [4,3,23,3,24,4,24,20,23,21,19,21,14,26,9,21,4,21,3,20,3,4,4,3],
+		type: 'poly'
+	};
+
+function createPin(title, position)
+{
+	var marker = new google.maps.Marker({
+		position: position,
+		title: title,
+		draggable: false,
+		icon: defaultIcon,
+		shape: iconShape
+	});
+	return marker;
+}
 
 $(document).ready(function ()
 {
+	defaultIcon = new google.maps.MarkerImage('images/crosshair-new.png',
+		new google.maps.Size(30,30),
+		new google.maps.Point(0,0),
+		new google.maps.Point(15,15));
+
 	// Map Initialisation
 	var mapTypeOptions = {
 		getTileUrl: function(coord, zoom) {
@@ -59,11 +81,7 @@ $(document).ready(function ()
 	{
 		var system = systems[i];
 		var latLng = new google.maps.LatLng(system[1], system[2]);
-		var marker = new google.maps.Marker({
-				position: latLng,
-				title: system[0],
-				draggable: false
-			});
+		var marker = createPin(system[0], latLng);
 
 		systemObjects[system[0]] = marker;
 		systemNames.push(system[0]);

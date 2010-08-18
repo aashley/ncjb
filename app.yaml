@@ -1,5 +1,5 @@
 application: nc-jb-map
-version: 3
+version: 4
 runtime: python
 api_version: 1
 
@@ -12,6 +12,9 @@ handlers:
 
 - url: /tiles
   static_dir: tiles
+
+- url: /images
+  static_dir: images
 
 - url: /remote_api
   script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
