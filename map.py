@@ -1,5 +1,6 @@
 import os
 import pprint
+import simplejson
 
 from google.appengine.api import memcache
 from google.appengine.ext import db, webapp
@@ -32,6 +33,15 @@ class Editor(webapp.RequestHandler):
 		template_values = {}
 		path = os.path.join(os.path.dirname(__file__), 'editor.html')
 		self.response.out.write(template.render(path, template_values))
+
+class EveHeaders(webapp.RequestHandler):
+	def get(self):
+		self.response.headers['Content-Type'] = 'application/json'
+		eveHeaders = {}
+		for name in self.request.headers:
+			if name.lower().count('eve-'):
+				eveHeaders[name.lower().replace('eve-', '')] = self.request.headers[name]
+		self.response.out.write(simplejson.dumps(eveHeaders))
 
 class SystemsFeed(webapp.RequestHandler):
 	def get(self):
@@ -254,6 +264,7 @@ class Generate(webapp.RequestHandler):
 
 application = webapp.WSGIApplication(
 		[
+			('/eve', EveHeaders),
 			('/generate', Generate),
 			('/systems', SystemsFeed),
 			('/editor', Editor),
