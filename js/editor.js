@@ -8,24 +8,8 @@ var active = {
 	oldName: null
 };
 
-function makeMarkerActive(marker, event)
+function makeMarkerActive(marker, newX, newY )
 {
-	var newX = newY = 0;
-
-	var $target = $(event.target);
-
-	console.log($target[0].tagName);
-	if( $target[0].tagName.toLowerCase() == 'area' )
-	{
-		var search = "img[usemap='#" + $target.parent('map').attr('id') + "']";
-		console.log(search);
-		$target = $(search);
-	}
-	console.log($target.offset());
-
-	newY = $target.offset().top + 40;
-	newX = $target.offset().left - 39;
-
 	$("#editBox").css({
 			'top': newY,
 			'left': newX
@@ -56,7 +40,22 @@ function markerOnClick(event)
 	{
 		closeActiveMarker();
 	}
-	makeMarkerActive(this, event);
+
+	var $target = $(event.target);
+
+	console.log($target[0].tagName);
+	if( $target[0].tagName.toLowerCase() == 'area' )
+	{
+		var search = "img[usemap='#" + $target.parent('map').attr('id') + "']";
+		console.log(search);
+		$target = $(search);
+	}
+	console.log($target.offset());
+
+	newY = $target.offset().top + 40;
+	newX = $target.offset().left - 39;
+
+	makeMarkerActive(this, newX, newY);
 }
 
 $(document).ready(function()
@@ -71,7 +70,7 @@ $(document).ready(function()
 				marker.setMap(map);
 				google.maps.event.addListener(marker, 'click', markerOnClick);
 
-				makeMarkerActive(marker, event);
+				makeMarkerActive(marker, event.pixel.x - 54, event.pixel.y + 25);
 			}
 			else
 			{
