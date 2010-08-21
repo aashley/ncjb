@@ -3,10 +3,9 @@ var selectedIcon = new google.maps.MarkerImage('images/activecrosshair-new.png',
 		new google.maps.Point(0,0),
 		new google.maps.Point(15,15));
 
-var active = {
-	marker: null,
-	oldName: null
-};
+var active = {marker: null, old: {name: null, lat: null, lng: null}};
+
+var placeHolderName = '** NEW **';
 
 function makeMarkerActive(marker, newX, newY )
 {
@@ -17,18 +16,78 @@ function makeMarkerActive(marker, newX, newY )
 		.show();
 	$("#editName").val(marker.getTitle()).focus();
 
+	if( marker.getTitle() == placeHolderName )
+	{
+		$("#deleteSystem").hide();
+	}
+	else
+	{
+		$("#deleteSystem").show();
+	}
+
 	marker.setIcon(selectedIcon);
 	marker.setDraggable(true);
 	active['marker'] = marker;
-	active['oldName'] = marker.getTitle();
+	active['old']['name'] = marker.getTitle();
+	active['old']['lat'] = marker.getPosition().lat();
+	active['old']['lng'] = marker.getPosition().lng();
 }
 
 function closeActiveMarker()
 {
 	marker = active['marker'];
-	marker.setIcon(defaultIcon);
-	marker.setDraggable(false);
-	active = {marker:null,oldName:null};
+
+	oldName = active['old']['name'];
+	oldLat = active['old']['lat'];
+	oldLng = active['old']['lng'];
+
+	newName = $("#editName").val();
+	active = {marker: null, old: {name: null, lat: null, lng: null}};
+
+	if( newName == placeHolderName )
+	{
+		// No name was set so discard the new system
+		marker.setMap(null);
+		delete marker;
+	}
+	else
+	{
+		console.log('possible changes');
+		if( oldName != newName )
+		{
+			console.log('name change ' + oldName + ' > ' + newName);
+			marker.setTitle(newName);
+			delete systemObjects[oldName];
+			systemObjects[newName] = marker;
+			// Tell the server to remove the old name
+			$.getJSON('/editor/delete',
+					{
+						'systemName': oldName
+					},
+					function(data)
+					{
+					});
+		}
+
+		if(		oldName != newName
+			||	oldLat != marker.getPosition().lat()
+			||	oldLng != marker.getPosition().lng() )
+		{
+			// Something has changed call a save with the server
+			$.getJSON('/editor/save',
+					{
+						'systemName': newName,
+						'lat': marker.getPosition().lat(),
+						'lng': marker.getPosition().lng()
+					},
+					function(data)
+					{
+					});
+		}
+		marker.setIcon(defaultIcon);
+		marker.setDraggable(false);
+	}
+
 	$("#editName").val('');
 	$("#editBox").hide();
 }
@@ -66,7 +125,7 @@ $(document).ready(function()
 		{
 			if( active['marker'] == null )
 			{
-				var marker = createPin("**UNNAMED**", event.latLng);
+				var marker = createPin(placeHolderName, event.latLng);
 				marker.setMap(map);
 				google.maps.event.addListener(marker, 'click', markerOnClick);
 
@@ -87,11 +146,6 @@ $(document).ready(function()
 		});
 
 	$("div#dumpDialog").hide();
-	$("button#saveChanges").click(function(e)
-		{
-			// Record action in GA
-			_gaq.push(['_trackPageview', '/edit/save/']);
-		})
 	$("button#dumpSystems").click(function(e)
 		{
 			systems = [];
@@ -117,5 +171,61 @@ $(document).ready(function()
 			// Record action in GA
 			_gaq.push(['_trackPageview', '/edit/dump/']);
 		});
+	$("#deleteSystem").button(
+		{
+			'icons': {
+				'primary': 'ui-icon-trash'
+				},
+			'text': false
+		})
+	.click(function(e)
+		{
+			$("#deleteConfirmDialog").dialog(
+				{
+					resizable: false,
+					height: 155,
+					width: 330,
+					modal: true,
+					buttons: {
+						'Delete System': function()
+						{
+							$.getJSON('/editor/delete',
+								{
+									'systemName': active['marker'].getTitle()
+								},
+								function(data)
+								{
+									// Handle removal from local data
+									if( typeof(data.success) != 'undefined' && data.success == true )
+									{
+										active['marker'].setMap(null);
+										delete active['marker'];
+										active = {marker: null, old: {name: null, lat: null, lng: null}};
+
+										$("#editName").val('');
+										$("#editBox").hide();
+									}
+									else
+									{
+										if( typeof(data.message) != 'undefined' )
+										{
+											alert(data.message);
+										}
+										else
+										{
+											alert('Unknown error occured while deleting system');
+										}
+									}
+								});
+							$(this).dialog('close');
+						},
+						'Cancel': function()
+						{
+							$(this).dialog('close');
+						}
+					}
+				});
+		});
+
 });
 

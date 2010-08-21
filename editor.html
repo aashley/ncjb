@@ -30,16 +30,18 @@ _gaq.push(['_trackPageview']);
 	<div id="map_canvas"></div>
 	<div id="adminControls">
 		<button id="dumpSystems">Dump Systems</button>
-		<button id="saveChanges">Save</button>
 	</div>
 	<div id="dumpDialog">
 		<textarea id="dump"></textarea>
 	</div>
 	<div id="editBox">
-		<input id="editName" class="ui-state-default ui-corner-all">
+		<input id="editName" class="ui-state-default ui-corner-all"> <button id="deleteSystem">Delete</button>
 	</div>
 	<div id="searchBox">
 		<input id="search" class="ui-state-default ui-corner-all">
+	</div>
+	<div id="deleteConfirmDialog">
+		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>This system will be permanently deleted and cannot be recovered. Are you sure?</p>
 	</div>
 </body>
 </html>

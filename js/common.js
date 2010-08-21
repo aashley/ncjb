@@ -6,7 +6,7 @@ var map = null,
 	currentSystem = null,
 	defaultIcon = null,
 	iconShape = {
-		coord: [4,3,23,3,24,4,24,20,23,21,19,21,14,26,9,21,4,21,3,20,3,4,4,3],
+		coord: [16,0,23,5,30,13,30,16,24,24,16,30,13,30,5,24,0,16,0,13,5,5,13,0,16,0],
 		type: 'poly'
 	},
 	inEveTimeout = 30000,		// If we're in eve look for header updates every 10 seconds
