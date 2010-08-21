@@ -9,8 +9,8 @@ var map = null,
 		coord: [4,3,23,3,24,4,24,20,23,21,19,21,14,26,9,21,4,21,3,20,3,4,4,3],
 		type: 'poly'
 	},
-	inEveTimeout = 15000,		// If we're in eve look for header updates every 10 seconds
-	outEveTimeout = 180000,		// If we're not in eve or get a request failure look every 60 seconds
+	inEveTimeout = 30000,		// If we're in eve look for header updates every 10 seconds
+	outEveTimeout = 360000,		// If we're not in eve or get a request failure look every 60 seconds
 	eveHeaderTimeout = null;
 
 function createPin(title, position)
@@ -96,7 +96,7 @@ $(document).ready(function ()
 {
 	$("#followMe").button({
 		icons: {
-			primary: 'ui-icon-refresh'
+			primary: 'ui-icon-link'
 		},
 		text: false
 	}).change(function()
