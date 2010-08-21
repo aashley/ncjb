@@ -74,7 +74,7 @@ function updateEveHeaders()
 	headerTimeout(outEveTimeout);
 }
 
-function activateSystemByName( systemName )
+function activateSystemByName( systemName, zoom )
 {
 	if( typeof activePin == "object" && activePin != null )
 	{
@@ -84,7 +84,10 @@ function activateSystemByName( systemName )
 	var marker = systemObjects[systemName];
 
 	map.panTo(marker.position);
-	map.setZoom(5);
+	if( typeof(zoom) != 'undefined' && zoom == true )
+	{
+		map.setZoom(5);
+	}
 	marker.setMap(map);
 	activePin = marker;
 
@@ -188,7 +191,7 @@ $(document).ready(function ()
 			source: systemNames,
 			select: function(event, ui)
 			{
-				activateSystemByName(ui.item.value);
+				activateSystemByName(ui.item.value, true);
 			}
 		}).keyup(function(event)
 			{
