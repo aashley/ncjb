@@ -52,10 +52,8 @@ function closeActiveMarker()
 	}
 	else
 	{
-		console.log('possible changes');
 		if( oldName != newName )
 		{
-			console.log('name change ' + oldName + ' > ' + newName);
 			marker.setTitle(newName);
 			delete systemObjects[oldName];
 			systemObjects[newName] = marker;
@@ -102,14 +100,11 @@ function markerOnClick(event)
 
 	var $target = $(event.target);
 
-	console.log($target[0].tagName);
 	if( $target[0].tagName.toLowerCase() == 'area' )
 	{
 		var search = "img[usemap='#" + $target.parent('map').attr('id') + "']";
-		console.log(search);
 		$target = $(search);
 	}
-	console.log($target.offset());
 
 	newY = $target.offset().top + 40;
 	newX = $target.offset().left - 39;
