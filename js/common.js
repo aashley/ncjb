@@ -2,11 +2,16 @@ var map = null,
 	systemObjects = {},
 	systemNames = [],
 	activePin = null,
+	inEve = false,
+	currentSystem = null,
 	defaultIcon = null,
 	iconShape = {
 		coord: [4,3,23,3,24,4,24,20,23,21,19,21,14,26,9,21,4,21,3,20,3,4,4,3],
 		type: 'poly'
-	};
+	},
+	inEveTimeout = 15000,		// If we're in eve look for header updates every 10 seconds
+	outEveTimeout = 180000,		// If we're not in eve or get a request failure look every 60 seconds
+	eveHeaderTimeout = null;
 
 function createPin(title, position)
 {
@@ -20,8 +25,92 @@ function createPin(title, position)
 	return marker;
 }
 
+function enableFollowMeControls()
+{
+	var widget = $("#followMe").button('widget');
+	widget.show();
+}
+
+function disableFollowMeControls()
+{
+	var widget = $("#followMe").button('widget');
+	widget.hide();
+}
+
+function headerTimeout(duration)
+{
+	if( eveHeaderTimeout != null )
+	{
+		clearTimeout(eveHeaderTimeout);
+		eveHeaderTimeout = null;
+	}
+	eveHeaderTimeout = setTimeout('updateEveHeaders();', duration);
+}
+
+function updateEveHeaders()
+{
+	$.getJSON('/eve', function(eveHeaders)
+		{
+			if( typeof(eveHeaders['solarsystemname']) != 'undefined' )
+			{
+				inEve = true;
+				currentSystem = eveHeaders['solarsystemname'];
+				enableFollowMeControls();
+				if( $('#followMe:checked').length > 0 )
+				{
+					activateSystemByName(currentSystem);
+					headerTimeout(inEveTimeout);
+				}
+				else
+				{
+					headerTimeout(outEveTimeout);
+				}
+			}
+			else
+			{
+				headerTimeout(outEveTimeout);
+			}
+		});
+	headerTimeout(outEveTimeout);
+}
+
+function activateSystemByName( systemName )
+{
+	if( typeof activePin == "object" && activePin != null )
+	{
+		activePin.setMap(null);
+	}
+
+	var marker = systemObjects[systemName];
+
+	map.panTo(marker.position);
+	map.setZoom(5);
+	marker.setMap(map);
+	activePin = marker;
+
+	// Record selection in GA
+	_gaq.push(['_trackPageview', '/systems/' + systemName]);
+}
+
 $(document).ready(function ()
 {
+	$("#followMe").button({
+		icons: {
+			primary: 'ui-icon-refresh'
+		},
+		text: false
+	}).change(function()
+	{
+		if( $(this).is(':checked') )
+		{
+			updateEveHeaders();
+		}
+		else
+		{
+			headerTimeout(outEveTimeout);
+		}
+	});
+
 	defaultIcon = new google.maps.MarkerImage('images/crosshair-new.png',
 		new google.maps.Size(30,30),
 		new google.maps.Point(0,0),
@@ -87,29 +176,27 @@ $(document).ready(function ()
 		systemNames.push(system[0]);
 	}
 
+	// Look for EVE Online IGB
+	if( typeof(CCPEVE) != 'undefined' )
+	{
+		var trustableUrl = 'http://' + location.host;
+		CCPEVE.requestTrust(trustableUrl);
+	}
 
 	// Setup Auto Complete on Search box
 	$("#search").autocomplete({
 			source: systemNames,
 			select: function(event, ui)
 			{
-				if( typeof activePin == "object" && activePin != null )
-				{
-					activePin.setMap(null);
-				}
-
-				var marker = systemObjects[ui.item.value];
-
-				map.panTo(marker.position);
-				map.setZoom(5);
-				marker.setMap(map);
-				activePin = marker;
-
-				// Record selection in GA
-				_gaq.push(['_trackPageview', '/systems/' + ui.item.value]);
+				activateSystemByName(ui.item.value);
 			}
 		}).keyup(function(event)
 			{
+				if( $('#followMe:checked').length > 0 )
+				{
+					$('#followMe')[0].checked = false;
+					$('#followMe').button('widget').click();
+				}
 				if( typeof systemObjects[$(event.target).val()] == 'undefined' )
 				{
 					if( activePin != null )
@@ -119,4 +206,12 @@ $(document).ready(function ()
 					}
 				}
 			});
+
+	// If we think we're in EVE, enable the follow me controls
+	disableFollowMeControls();
+	if( inEve )
+	{
+		enableFollowMeControls();
+	}
+	headerTimeout(inEveTimeout);
 });

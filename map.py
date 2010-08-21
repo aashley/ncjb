@@ -17,30 +17,40 @@ class System(db.Model):
 	lat = db.FloatProperty()
 	lng = db.FloatProperty()
 
-
 #
 # Request Handlers
 #
 
 class Map(webapp.RequestHandler):
 	def get(self):
-		template_values = {}
+		eveHeaders = getEveHeaders(self.request.headers)
+		template_values = {
+			'inEve': 'false',
+			'currentSystem': 'null'
+		}
+		if 'solarsystemname' in eveHeaders and len(eveHeaders['solarsystemname']) > 0:
+			template_values['inEve'] = 'true'
+			template_values['currentSystem'] = '"' + eveHeaders['solarsystemname'] + '"';
 		path = os.path.join(os.path.dirname(__file__), 'map.html')
 		self.response.out.write(template.render(path, template_values))
 
 class Editor(webapp.RequestHandler):
 	def get(self):
-		template_values = {}
+		eveHeaders = getEveHeaders(self.request.headers)
+		template_values = {
+			'inEve': 'false',
+			'currentSystem': 'null'
+		}
+		if 'solarsystemname' in eveHeaders and len(eveHeaders['solarsystemname']) > 0:
+			template_values['inEve'] = 'true'
+			template_values['currentSystem'] = '"' + eveHeaders['solarsystemname'] + '"';
 		path = os.path.join(os.path.dirname(__file__), 'editor.html')
 		self.response.out.write(template.render(path, template_values))
 
 class EveHeaders(webapp.RequestHandler):
 	def get(self):
 		self.response.headers['Content-Type'] = 'application/json'
-		eveHeaders = {}
-		for name in self.request.headers:
-			if name.lower().count('eve-'):
-				eveHeaders[name.lower().replace('eve-', '')] = self.request.headers[name]
+		eveHeaders = getEveHeaders(self.request.headers)
 		self.response.out.write(simplejson.dumps(eveHeaders))
 
 class SystemsFeed(webapp.RequestHandler):
@@ -271,6 +281,17 @@ application = webapp.WSGIApplication(
 			('/.*', Map)
 		],
 		debug=True)
+
+#
+# Utility Functions
+#
+
+def getEveHeaders( headers):
+	eveHeaders = {}
+	for name in headers:
+		if name.lower().count('eve-'):
+			eveHeaders[name.lower().replace('eve-', '')] = headers[name]
+	return eveHeaders
 
 def main():
 	run_wsgi_app(application)

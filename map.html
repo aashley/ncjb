@@ -14,6 +14,10 @@
 <script type="text/javascript" src="systems"></script>
 <script type="text/javascript" src="js/common.js"></script>
 <script type="text/javascript">
+
+inEve = {{ inEve }};
+currentSystem = {{ currentSystem }};
+
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-346775-3']);
 _gaq.push(['_trackPageview']);
@@ -28,6 +32,7 @@ _gaq.push(['_trackPageview']);
 <body>
 	<div id="map_canvas"></div>
 	<div id="searchBox">
+		<input id="followMe" type="checkbox"><label for="followMe">Follow</label>
 		<input id="search" class="ui-state-default ui-corner-all">
 	</div>
 </body>
