@@ -93,8 +93,8 @@ class EditorSave(webapp.RequestHandler):
 		else:
 			system = query.get()
 			system.name = self.request.get('systemName')
-			system.lat = self.request.get('lat')
-			system.lng = self.request.get('lng')
+			system.lat = float(self.request.get('lat'))
+			system.lng = float(self.request.get('lng'))
 
 		system.put()
 
