@@ -12,6 +12,7 @@ handlers:
 
 - url: /tiles
   static_dir: tiles
+  expiration: "1d"
 
 - url: /images
   static_dir: images
