@@ -15,6 +15,10 @@ function makeMarkerActive(marker, newX, newY )
 			})
 		.show();
 	$("#editName").val(marker.getTitle()).focus();
+	if( $("#editName").val() == placeHolderName )
+	{
+		$("#editName").select();
+	}
 
 	if( marker.getTitle() == placeHolderName )
 	{
@@ -140,7 +144,7 @@ $(document).ready(function()
 			google.maps.event.addListener(systemMarker, 'click', markerOnClick);
 		});
 
-	$("div#dumpDialog").hide();
+	$("div#dumpDialog, div#deleteConfirmDialog").hide();
 	$("button#dumpSystems").click(function(e)
 		{
 			systems = [];

@@ -59,6 +59,10 @@ function updateEveHeaders()
 				if( $('#followMe:checked').length > 0 )
 				{
 					activateSystemByName(currentSystem);
+
+					// Record selection in GA
+					_gaq.push(['_trackPageview', '/follow/' + systemName]);
+
 					headerTimeout(inEveTimeout);
 				}
 				else
@@ -90,9 +94,6 @@ function activateSystemByName( systemName, zoom )
 	}
 	marker.setMap(map);
 	activePin = marker;
-
-	// Record selection in GA
-	_gaq.push(['_trackPageview', '/systems/' + systemName]);
 }
 
 $(document).ready(function ()
@@ -107,10 +108,12 @@ $(document).ready(function ()
 		if( $(this).is(':checked') )
 		{
 			updateEveHeaders();
+			_gaq.push(['_trackPageview', '/follow/enable']);
 		}
 		else
 		{
 			headerTimeout(outEveTimeout);
+			_gaq.push(['_trackPageview', '/follow/disable']);
 		}
 	});
 
@@ -192,6 +195,9 @@ $(document).ready(function ()
 			select: function(event, ui)
 			{
 				activateSystemByName(ui.item.value, true);
+
+				// Record selection in GA
+				_gaq.push(['_trackPageview', '/search/' + systemName]);
 			}
 		}).keyup(function(event)
 			{

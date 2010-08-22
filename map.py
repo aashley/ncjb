@@ -2,7 +2,7 @@ import os
 import pprint
 import simplejson
 
-from google.appengine.api import memcache
+from google.appengine.api import memcache, users
 from google.appengine.ext import db, webapp
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
@@ -36,16 +36,21 @@ class Map(webapp.RequestHandler):
 
 class Editor(webapp.RequestHandler):
 	def get(self):
-		eveHeaders = getEveHeaders(self.request.headers)
-		template_values = {
-			'inEve': 'false',
-			'currentSystem': 'null'
-		}
-		if 'solarsystemname' in eveHeaders and len(eveHeaders['solarsystemname']) > 0:
-			template_values['inEve'] = 'true'
-			template_values['currentSystem'] = '"' + eveHeaders['solarsystemname'] + '"';
-		path = os.path.join(os.path.dirname(__file__), 'editor.html')
-		self.response.out.write(template.render(path, template_values))
+		user = users.get_current_user()
+
+		if user:
+			eveHeaders = getEveHeaders(self.request.headers)
+			template_values = {
+				'inEve': 'false',
+				'currentSystem': 'null'
+			}
+			if 'solarsystemname' in eveHeaders and len(eveHeaders['solarsystemname']) > 0:
+				template_values['inEve'] = 'true'
+				template_values['currentSystem'] = '"' + eveHeaders['solarsystemname'] + '"';
+			path = os.path.join(os.path.dirname(__file__), 'editor.html')
+			self.response.out.write(template.render(path, template_values))
+		else:
+			self.redirect(users.create_login_url(self.request.uri))
 
 class EveHeaders(webapp.RequestHandler):
 	def get(self):
