@@ -61,7 +61,7 @@ function updateEveHeaders()
 					activateSystemByName(currentSystem);
 
 					// Record selection in GA
-					_gaq.push(['_trackPageview', '/follow/' + systemName]);
+					_gaq.push(['_trackPageview', '/follow/' + currentSystem]);
 
 					headerTimeout(inEveTimeout);
 				}
@@ -197,7 +197,7 @@ $(document).ready(function ()
 				activateSystemByName(ui.item.value, true);
 
 				// Record selection in GA
-				_gaq.push(['_trackPageview', '/search/' + systemName]);
+				_gaq.push(['_trackPageview', '/search/' + ui.item.value]);
 			}
 		}).keyup(function(event)
 			{
