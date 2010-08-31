@@ -68,3 +68,25 @@ body
 	padding: 4px;
 	font-size: 15px;
 }
+
+#aboutDialog
+{
+	display: none;
+	position: relative;
+}
+
+#aboutDialog .changelog
+{
+	position: absolute;
+	top: 40%;
+	bottom: 6;
+	right: 12;
+	left: 12;
+}
+
+#aboutDialog .changelog div
+{
+	height: 170px;
+	width: 576px;
+	overflow: auto;
+}

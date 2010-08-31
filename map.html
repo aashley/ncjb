@@ -10,6 +10,7 @@
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/jquery-ui.min.js"></script>
 <script type="text/javascript" src="js/jquery.cookie.js"></script>
+<script type="text/javascript" src="js/jquery.history.min.js"></script>
 <script type="text/javascript" src="js/json2.js"></script>
 <script type="text/javascript" src="systems"></script>
 <script type="text/javascript" src="js/common.js"></script>
@@ -34,6 +35,53 @@ _gaq.push(['_trackPageview']);
 	<div id="searchBox">
 		<input id="followMe" type="checkbox"><label for="followMe">Follow</label>
 		<input id="search" class="ui-state-default ui-corner-all">
+		<button id="about">About</button>
+	</div>
+	<div id="aboutDialog">
+		<h3>Copyright</h3>
+		<p>Map Imagery by <a class="itemLink" href="#" evetype="1377" eveitemid="2018138821">Sascha Ales</a>.</p>
+		<p>Google Maps Integration by <a class="itemLink" href="#" evetype="1377" eveitemid="868422451">Mjollnir Arcote</a>.</p>
+		<div class="changelog">
+			<h3>Changelog</h3>
+			<div>
+				<strong>Version 6</strong>
+				<ul>
+					<li>Add About popup</li>
+					<li>Add direct linking support. Systems can now be linked to using links like <a href="/#TVN-FM">http://nc-jb-map.appspot.com/#TVN-FM</a>.</li>
+				</ul>
+				<strong>Version 5</strong>
+				<ul>
+					<li>Complete database backed editor</li>
+					<li>Update Google Analytics to track new types of user interaction</li>
+				</ul>
+				<strong>Version 4</strong>
+				<ul>
+					<li>Split editor into its own page to reduce JS loaded by most map users</li>
+					<li>Switch to Google Code hosted versions of jQuery and jQuery UI</li>
+					<li>Add custom crosshair image for map pins</li>
+					<li>Add inteface for getting EVE headers from IGB</li>
+					<li>Add "Follow Me" feature. When enabled the browser will center the map on your current system as you travel</li>
+					<li>Increase client side cache duration for map tiles</li>
+				</ul>
+				<strong>Version 3</strong>
+				<ul>
+					<li>Add caching to system list to reduce host load</li>
+				</ul>
+				<strong>Version 2</strong>
+				<ul>
+					<li>Switch to Google App Engine for hosting</li>
+					<li>Remove static javascript list of systems replace with database backed feed</li>
+				</ul>
+				<strong>Version 1</strong>
+				<ul>
+					<li>Initial version of map</li>
+					<li>Supports searching of known systems</li>
+					<li>Remembers last view of map</li>
+					<li>Integrated editor of system details</li>
+					<li>Add Google Analytics to track usage patterns of map</li>
+				</ul>
+			</div>
+		</div>
 	</div>
 </body>
 </html>

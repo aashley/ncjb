@@ -58,6 +58,7 @@ function updateEveHeaders()
 				enableFollowMeControls();
 				if( $('#followMe:checked').length > 0 )
 				{
+					$.History.go(currentSystem);
 					activateSystemByName(currentSystem);
 
 					// Record selection in GA
@@ -116,6 +117,33 @@ $(document).ready(function ()
 			_gaq.push(['_trackPageview', '/follow/disable']);
 		}
 	});
+
+	$("#about").button({
+		icons: {
+			primary: 'ui-icon-help'
+		},
+		text: false
+	}).click(function()
+	{
+		$('#aboutDialog').dialog({
+			modal: true,
+			title: "About " + $('title').text(),
+			width: 600,
+			height: 400,
+			buttons: {}
+		});
+	});
+
+	$(".itemLink").click(function(e)
+		{
+			if( typeof(CCPEVE) != 'undefined' )
+			{
+				var type = $(e.target).attr('evetype');
+				var itemid = $(e.target).attr('eveitemid');
+
+				CCPEVE.showInfo(type, itemid);
+			}
+		});
 
 	defaultIcon = new google.maps.MarkerImage('images/crosshair-new.png',
 		new google.maps.Size(30,30),
@@ -194,7 +222,9 @@ $(document).ready(function ()
 			source: systemNames,
 			select: function(event, ui)
 			{
+				$.History.go(ui.item.value);
 				activateSystemByName(ui.item.value, true);
+				map.setZoom(5);
 
 				// Record selection in GA
 				_gaq.push(['_trackPageview', '/search/' + ui.item.value]);
@@ -215,6 +245,12 @@ $(document).ready(function ()
 					}
 				}
 			});
+
+	// Setup history support
+	$.History.bind(function(state)
+		{
+			activateSystemByName(state);
+		});
 
 	// If we think we're in EVE, enable the follow me controls
 	disableFollowMeControls();
