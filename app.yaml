@@ -1,5 +1,5 @@
 application: nc-jb-map
-version: 6
+version: 7
 runtime: python
 api_version: 1
 
@@ -23,6 +23,22 @@ handlers:
 
 - url: /.*
   script: map.py
+
+skip_files:
+- ^(.*/)?app\.yaml
+- ^(.*/)?app\.yml
+- ^(.*/)?index\.yaml
+- ^(.*/)?index\.yml
+- ^(.*/)?#.*#
+- ^(.*/)?.*~
+- ^(.*/)?.*\.py[co]
+- ^(.*/)?.*/RCS/.*
+- ^(.*/)?\..*
+- ^(.*/)?.*\.bak$
+- ^(.*/)?.*\.tmp$
+- ^(.*/)?.*\.sh$
+- ^(.*/)?.*/.svn/.*
+- ^(.*/)?.*bulkloader.*
 
 derived_file_type:
 - python_precompiled
