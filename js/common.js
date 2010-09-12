@@ -153,17 +153,17 @@ $(document).ready(function ()
 	// Map Initialisation
 	var mapTypeOptions = {
 		getTileUrl: function(coord, zoom) {
-			return "tiles/" + zoom + "/tile_" + coord.x + '_' + coord.y + ".png";
+			return "tiles/sascha/" + zoom + "/tile_" + coord.x + '_' + coord.y + ".png";
 		},
 		tileSize: new google.maps.Size(256,256),
 		isPng: true,
-		name: "NC JB",
+		name: "Sascha",
 		minZoom: 2,
 		maxZoom: 5,
-		alt: "Northern Coalition Jump Bridge Network"
+		alt: "Northern Coalition Jump Bridge Network by Sascha Ales"
 	};
 
-	var eveMapType = new google.maps.ImageMapType(mapTypeOptions);
+	var saschaMapType = new google.maps.ImageMapType(mapTypeOptions);
 
 	var myLatlng = new google.maps.LatLng(0,0);
 	var myOptions = {
@@ -172,14 +172,16 @@ $(document).ready(function ()
 		center: myLatlng,
 		disableDefaultUI: true,
 		navigationControl: true,
+		mapTypeControl: true,
 		mapTypeControlOptions: {
-			mapTypeIds: ['ncjb'],
+			mapTypeIds: ['sascha'],
+			position: google.maps.ControlPosition.BOTTOM_RIGHT
 		}
 	}
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
 
-	map.mapTypes.set('ncjb', eveMapType);
-	map.setMapTypeId('ncjb');
+	map.mapTypes.set('sascha', saschaMapType);
+	map.setMapTypeId('sascha');
 
 	// Look for previous view in cookies
 	if(		$.cookie('ncjb_lat') != null
@@ -194,9 +196,9 @@ $(document).ready(function ()
 	google.maps.event.addListener(map, 'center_changed', function()
 		{
 			var center = map.getCenter();
-			$.cookie('ncjb_lat', center.lat());
-			$.cookie('ncjb_lng', center.lng());
-			$.cookie('ncjb_zoom', map.getZoom());
+			$.cookie('ncjb_lat', center.lat(), {expires: 7});
+			$.cookie('ncjb_lng', center.lng(), {expires: 7});
+			$.cookie('ncjb_zoom', map.getZoom(), {expires: 7});
 		});
 
 	// Load predefined Systems
