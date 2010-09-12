@@ -39,6 +39,10 @@ function makeMarkerActive(marker, newX, newY )
 
 function closeActiveMarker()
 {
+	if( active['marker'] == null )
+	{
+		return;
+	}
 	marker = active['marker'];
 
 	oldName = active['old']['name'];
@@ -64,7 +68,8 @@ function closeActiveMarker()
 			// Tell the server to remove the old name
 			$.getJSON('/editor/delete',
 					{
-						'systemName': oldName
+						'systemName': oldName,
+						'mapType': map.getMapTypeId()
 					},
 					function(data)
 					{
@@ -80,7 +85,8 @@ function closeActiveMarker()
 					{
 						'systemName': newName,
 						'lat': marker.getPosition().lat(),
-						'lng': marker.getPosition().lng()
+						'lng': marker.getPosition().lng(),
+						'mapType': map.getMapTypeId()
 					},
 					function(data)
 					{
@@ -116,6 +122,17 @@ function markerOnClick(event)
 	makeMarkerActive(this, newX, newY);
 }
 
+function activateEditingForMap()
+{
+	$.each(systemObjects, function(systemName, systemMarker)
+		{
+			systemMarker.setMap(map);
+
+			google.maps.event.addListener(systemMarker, 'click', markerOnClick);
+		});
+
+}
+
 $(document).ready(function()
 {
 	$("#adminControls button").button();
@@ -137,13 +154,6 @@ $(document).ready(function()
 		});
 
 	// Setup Editor
-	$.each(systemObjects, function(systemName, systemMarker)
-		{
-			systemMarker.setMap(map);
-
-			google.maps.event.addListener(systemMarker, 'click', markerOnClick);
-		});
-
 	$("div#dumpDialog, div#deleteConfirmDialog").hide();
 	$("button#dumpSystems").click(function(e)
 		{
@@ -190,7 +200,8 @@ $(document).ready(function()
 						{
 							$.getJSON('/editor/delete',
 								{
-									'systemName': active['marker'].getTitle()
+									'systemName': active['marker'].getTitle(),
+									'mapType': map.getMapTypeId()
 								},
 								function(data)
 								{

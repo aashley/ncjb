@@ -86,6 +86,11 @@ function activateSystemByName( systemName, zoom )
 		activePin.setMap(null);
 	}
 
+	if( typeof systemObjects[systemName] == 'undefined' || systemObjects[systemName] == null )
+	{
+		return;
+	}
+
 	var marker = systemObjects[systemName];
 
 	map.panTo(marker.position);
@@ -95,6 +100,60 @@ function activateSystemByName( systemName, zoom )
 	}
 	marker.setMap(map);
 	activePin = marker;
+}
+
+function updateSystemList()
+{
+	// Hooks for editor
+	if( typeof closeActiveMarker !== 'undefined' )
+	{
+		closeActiveMarker();
+	}
+
+	var findSystem = "";
+	if( typeof activePin == "object" && activePin != null )
+	{
+		findSystem = activePin.getTitle();
+		activePin.setMap(null);
+		activePin = null;
+	}
+
+	for( systemName in systemObjects )
+	{
+		systemObjects[systemName].setMap(null);
+		delete systemObjects[systemName];
+	}
+
+	systemNames = [];
+	systemObjects = {};
+
+	var mapTypeId = map.getMapTypeId();
+	$.getJSON('/systems',
+			{ 'mapType': mapTypeId },
+			function(data)
+			{
+				// Load predefined Systems
+				for( i = 0; i < data.length; i++ )
+				{
+					var system = data[i];
+					var latLng = new google.maps.LatLng(system.lat, system.lng);
+					var marker = createPin(system.name, latLng);
+
+					systemObjects[system.name] = marker;
+					systemNames.push(system.name);
+				}
+
+				$("#search").autocomplete("option", 'source', systemNames);
+				if( findSystem.length > 0 )
+				{
+					//activateSystemByName(findSystem);
+				}
+				$.History.go($.History.getHash());
+				if( typeof activateEditingForMap !== 'undefined' )
+				{
+					activateEditingForMap();
+				}
+			});
 }
 
 $(document).ready(function ()
@@ -151,7 +210,7 @@ $(document).ready(function ()
 		new google.maps.Point(15,15));
 
 	// Map Initialisation
-	var mapTypeOptions = {
+	var saschaTypeOptions = {
 		getTileUrl: function(coord, zoom) {
 			return "tiles/sascha/" + zoom + "/tile_" + coord.x + '_' + coord.y + ".png";
 		},
@@ -162,8 +221,21 @@ $(document).ready(function ()
 		maxZoom: 5,
 		alt: "Northern Coalition Jump Bridge Network by Sascha Ales"
 	};
+	var saschaMapType = new google.maps.ImageMapType(saschaTypeOptions);
 
-	var saschaMapType = new google.maps.ImageMapType(mapTypeOptions);
+	// Map Initialisation
+	var siriusTypeOptions = {
+		getTileUrl: function(coord, zoom) {
+			return "tiles/sirius/" + zoom + "/tile_" + coord.x + '_' + coord.y + ".png";
+		},
+		tileSize: new google.maps.Size(256,256),
+		isPng: true,
+		name: "Sirius",
+		minZoom: 2,
+		maxZoom: 5,
+		alt: "Northern Coalition Jump Bridge Network by the Sirius Project"
+	};
+	var siriusMapType = new google.maps.ImageMapType(siriusTypeOptions);
 
 	var myLatlng = new google.maps.LatLng(0,0);
 	var myOptions = {
@@ -174,14 +246,29 @@ $(document).ready(function ()
 		navigationControl: true,
 		mapTypeControl: true,
 		mapTypeControlOptions: {
-			mapTypeIds: ['sascha'],
+			mapTypeIds: ['sascha', 'sirius'],
 			position: google.maps.ControlPosition.BOTTOM_RIGHT
 		}
 	}
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
 
 	map.mapTypes.set('sascha', saschaMapType);
-	map.setMapTypeId('sascha');
+	map.mapTypes.set('sirius', siriusMapType);
+
+	if(	$.cookie('ncjb_maptype') != null )
+	{
+		map.setMapTypeId($.cookie('ncjb_maptype'));
+	}
+	else
+	{
+		map.setMapTypeId('sascha');
+	}
+
+	google.maps.event.addListener(map, 'maptypeid_changed', function()
+		{
+			$.cookie('ncjb_maptype', map.getMapTypeId(), {expires: 7});
+			updateSystemList();
+		});
 
 	// Look for previous view in cookies
 	if(		$.cookie('ncjb_lat') != null
@@ -201,16 +288,7 @@ $(document).ready(function ()
 			$.cookie('ncjb_zoom', map.getZoom(), {expires: 7});
 		});
 
-	// Load predefined Systems
-	for( i = 0; i < systems.length; i++ )
-	{
-		var system = systems[i];
-		var latLng = new google.maps.LatLng(system[1], system[2]);
-		var marker = createPin(system[0], latLng);
-
-		systemObjects[system[0]] = marker;
-		systemNames.push(system[0]);
-	}
+	//updateSystemList();
 
 	// Look for EVE Online IGB
 	if( typeof(CCPEVE) != 'undefined' )

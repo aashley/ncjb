@@ -47,7 +47,7 @@ map_type()
 	IMAGE_SRC=$1
 	TARGET_DIR=$2
 
-	echo Getting Original Map...
+	echo Getting Original Map $IMAGE_SRC...
 	wget --quiet -O base.jpg $IMAGE_SRC
 
 	echo Converting Original to zoom level $BASE_ZOOM_LEVEL size...
@@ -70,3 +70,4 @@ map_type()
 }
 
 map_type "http://www.fenixdivina.com/ncjumpbridges_new.jpg" "sascha"
+map_type "http://map.hirr.net/northernjb.jpg" "sirius"

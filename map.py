@@ -1,6 +1,7 @@
 import os
 import pprint
 import simplejson
+import logging
 
 from google.appengine.api import memcache, users
 from google.appengine.ext import db, webapp
@@ -16,6 +17,7 @@ class System(db.Model):
 	name = db.StringProperty()
 	lat = db.FloatProperty()
 	lng = db.FloatProperty()
+	mapType = db.StringProperty()
 
 #
 # Request Handlers
@@ -58,27 +60,62 @@ class EveHeaders(webapp.RequestHandler):
 		eveHeaders = getEveHeaders(self.request.headers)
 		self.response.out.write(simplejson.dumps(eveHeaders))
 
+class UpdateMapType(webapp.RequestHandler):
+	def get(self):
+		self.response.headers['Content-Type'] = 'text/plain'
+
+		systems = System.gql("ORDER BY name")
+
+#		for system in systems:
+#			if system.mapType != 'sascha' and system.mapType != 'sirius':
+#				system.mapType='sirius'
+#				system.put()
+#				self.response.out.write(system.name + ' fixed\n')
+		for system in systems:
+			system.mapType = 'sascha'
+			system.put()
+
+			self.response.out.write(system.name + ' on sascha updated\n')
+
+			newSystem = System(name=system.name,
+					lat=system.lat,
+					lng=system.lng,
+					mapType='sirius')
+			newSystem.put()
+
+			self.response.out.write(system.name + ' on sirius created\n')
+
+		memcache.delete('systemsFeed');
+		memcache.delete('systemsFeedsascha');
+		memcache.delete('systemsFeedsirius');
+
 class SystemsFeed(webapp.RequestHandler):
 	def get(self):
-		self.response.headers['Content-Type'] = 'text/javascript'
+		self.response.headers['Content-Type'] = 'application/json'
 
-		output = memcache.get("systemsFeed")
+		mapType = self.request.get('mapType')
+
+		output = memcache.get("systemsFeed" + mapType)
 		if output is None:
-			output = "var systems = ["
-			first = True
 
-			systems = System.gql("ORDER BY name")
+			if len(mapType) > 0:
+				systems = System.gql("WHERE mapType = :1 ORDER BY name", mapType)
+			else:
+				systems = System.gql("ORDER BY name")
+
+			finalSystems = []
 
 			for system in systems:
-				if first:
-					first = False
-				else:
-					output += ",\n"
-				output += "['%s', %.22f, %.22f]" % (system.name, system.lat, system.lng)
+				finalSystems.append({
+						"name": system.name,
+						"lat": system.lat,
+						"lng": system.lng,
+						"mapType": system.mapType
+						})
 
-			output += "\n]"
+			output = simplejson.dumps(finalSystems)
 
-			if not memcache.add("systemsFeed", output, 3600):
+			if not memcache.add("systemsFeed" + mapType, output, 3600):
 				logging.error("Storing systemsFeed in memcache failed.")
 		self.response.out.write(output)
 
@@ -90,20 +127,26 @@ class EditorSave(webapp.RequestHandler):
 			'message': 'Success'
 		}
 
-		query = System.gql("WHERE name = :name", name=self.request.get('systemName'))
+		query = System.gql("WHERE name = :name AND mapType = :mapType",
+				name=self.request.get('systemName'),
+				mapType=self.request.get('mapType'))
+
 		if query.count() == 0:
 			system = System(name=self.request.get('systemName'),
 					lat=float(self.request.get('lat')),
-					lng=float(self.request.get('lng')))
+					lng=float(self.request.get('lng')),
+					mapType=self.request.get('mapType'))
 		else:
 			system = query.get()
 			system.name = self.request.get('systemName')
 			system.lat = float(self.request.get('lat'))
 			system.lng = float(self.request.get('lng'))
+			system.mapType = self.request.get('mapType')
 
 		system.put()
 
 		memcache.delete('systemsFeed')
+		memcache.delete('systemsFeed' + self.request.get('mapType'))
 		self.response.out.write(simplejson.dumps(result))
 
 class EditorDelete(webapp.RequestHandler):
@@ -114,16 +157,21 @@ class EditorDelete(webapp.RequestHandler):
 			'message': 'Success'
 		}
 
-		query = System.gql("WHERE name = :name", name=self.request.get('systemName'))
+		query = System.gql("WHERE name = :name AND mapType = :mapType",
+				name=self.request.get('systemName'),
+				mapType=self.request.get('mapType'))
+
 		if query.count() >= 1:
 			system = query.get()
 			system.delete()
 
 		memcache.delete('systemsFeed')
+		memcache.delete('systemsFeed' + self.request.get('mapType'))
 		self.response.out.write(simplejson.dumps(result))
 
 application = webapp.WSGIApplication(
 		[
+			('/updateMapType', UpdateMapType),
 			('/eve', EveHeaders),
 			('/systems', SystemsFeed),
 			('/editor/save', EditorSave),
