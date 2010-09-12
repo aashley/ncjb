@@ -267,6 +267,7 @@ $(document).ready(function ()
 	google.maps.event.addListener(map, 'maptypeid_changed', function()
 		{
 			$.cookie('ncjb_maptype', map.getMapTypeId(), {expires: 7});
+			_gaq.push(['_trackPageview', '/mapType/' + map.getMapTypeId()]);
 			updateSystemList();
 		});
 
