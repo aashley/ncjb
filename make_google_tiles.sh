@@ -45,28 +45,48 @@ cut()
 map_type()
 {
 	IMAGE_SRC=$1
+	TARGET_FILE=`basename ${IMAGE_SRC}`
 	TARGET_DIR=$2
 
-	echo Getting Original Map $IMAGE_SRC...
-	wget --quiet -O base.jpg $IMAGE_SRC
+	MOD_TIME=0
+	if [ -e ${TARGET_FILE} ];
+	then
+		MOD_TIME=`stat -c %Y ${TARGET_FILE}`
+	fi
+	echo -n Checking for updated map $IMAGE_SRC... 
+	wget --quiet -N $IMAGE_SRC
+	NEW_MOD_TIME=`stat -c %Y ${TARGET_FILE}`
+	if [ $MOD_TIME -ge $NEW_MOD_TIME ];
+	then
+		echo not found.
+		return;
+	fi
+	echo found.
+
+	cp ${TARGET_FILE} ${TARGET_DIR}.jpg
 
 	echo Converting Original to zoom level $BASE_ZOOM_LEVEL size...
-	convert base.jpg -background Black -gravity center -extent ${BASE_SIZE}x${BASE_SIZE} base.png
+	convert ${TARGET_DIR}.jpg -background Black -gravity center -extent ${BASE_SIZE}x${BASE_SIZE} ${TARGET_DIR}.png
 
 	zSize=$BASE_SIZE
 	zCount=$BASE_TILE_COUNT
 	for (( z=$BASE_ZOOM_LEVEL; z>=2; z-- ))
 	do
 		echo "Zoom Level $z (${zSize}px ${zCount} tiles)..."
-		cut $z base.png $zCount $TARGET_DIR
+		cut $z ${TARGET_DIR}.png $zCount $TARGET_DIR
 
 		zSize=$(( zSize / 2 ))
 		zCount=$(( zCount / 2 ))
-		convert base.png -resize ${zSize}x${zSize} base_resized.png
-		mv -f base_resized.png base.png
+		convert ${TARGET_DIR}.png -resize ${zSize}x${zSize} ${TARGET_DIR}_resized.png
+		mv -f ${TARGET_DIR}_resized.png ${TARGET_DIR}.png
 	done
 
-	rm base.jpg base.png
+	rm ${TARGET_DIR}.jpg ${TARGET_DIR}.png
+
+	MOD_TIME=`stat -c %y ${TARGET_FILE}`
+	MESSAGE="Updated ${TARGET_DIR} map at ${MOD_TIME}"
+
+	svn commit -m "$MESSAGE" tiles/
 }
 
 map_type "http://www.fenixdivina.com/ncjumpbridges_new.jpg" "sascha"
