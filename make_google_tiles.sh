@@ -89,5 +89,5 @@ map_type()
 	svn commit -m "$MESSAGE" tiles/
 }
 
-map_type "http://www.fenixdivina.com/ncjumpbridges_new.jpg" "sascha"
+map_type "http://www.benortherner.com/NorthernMap.jpg" "sascha"
 map_type "http://map.hirr.net/northernjb.jpg" "sirius"
