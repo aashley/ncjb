@@ -53,7 +53,7 @@ map_type()
 	then
 		MOD_TIME=`stat -c %Y ${TARGET_FILE}`
 	fi
-	echo -n Checking for updated map $IMAGE_SRC... 
+	echo -n "Checking for updated map $IMAGE_SRC ... "
 	wget --quiet -N $IMAGE_SRC
 	NEW_MOD_TIME=`stat -c %Y ${TARGET_FILE}`
 	if [ $MOD_TIME -ge $NEW_MOD_TIME ];
