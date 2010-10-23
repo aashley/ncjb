@@ -1,5 +1,5 @@
 application: nc-jb-map
-version: 8
+version: 9
 runtime: python
 api_version: 1
 
@@ -16,10 +16,6 @@ handlers:
 
 - url: /images
   static_dir: images
-
-- url: /remote_api
-  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
-  login: admin
 
 - url: /.*
   script: map.py
@@ -39,6 +35,10 @@ skip_files:
 - ^(.*/)?.*\.sh$
 - ^(.*/)?.*/.svn/.*
 - ^(.*/)?.*bulkloader.*
+
+builtins:
+- datastore_admin: on
+- remote_api: on
 
 derived_file_type:
 - python_precompiled
