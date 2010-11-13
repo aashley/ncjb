@@ -212,13 +212,19 @@ $(document).ready(function ()
 	// Map Initialisation
 	var saschaTypeOptions = {
 		getTileUrl: function(coord, zoom) {
+			var maxTile = Math.pow(2, zoom) - 1;
+			if(		coord.x < 0 || coord.x > maxTile
+				||	coord.y < 0 || coord.y > maxTile )
+			{
+				return "tiles/tile_black.png";
+			}
 			return "tiles/sascha/" + zoom + "/tile_" + coord.x + '_' + coord.y + ".png";
 		},
 		tileSize: new google.maps.Size(256,256),
 		isPng: true,
 		name: "Sascha",
-		minZoom: 2,
-		maxZoom: 5,
+		minZoom: 3,
+		maxZoom: 6,
 		alt: "Northern Coalition Jump Bridge Network by Sascha Ales"
 	};
 	var saschaMapType = new google.maps.ImageMapType(saschaTypeOptions);
@@ -226,6 +232,12 @@ $(document).ready(function ()
 	// Map Initialisation
 	var siriusTypeOptions = {
 		getTileUrl: function(coord, zoom) {
+			var maxTile = Math.pow(2, zoom) - 1;
+			if(		coord.x < 0 || coord.x > maxTile
+				||	coord.y < 0 || coord.y > maxTile )
+			{
+				return "tiles/tile_black.png";
+			}
 			return "tiles/sirius/" + zoom + "/tile_" + coord.x + '_' + coord.y + ".png";
 		},
 		tileSize: new google.maps.Size(256,256),

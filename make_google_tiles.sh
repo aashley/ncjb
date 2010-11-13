@@ -1,8 +1,11 @@
 #!/bin/bash
 
-BASE_SIZE=8192
-BASE_TILE_COUNT=32
-BASE_ZOOM_LEVEL=5
+# Level 5
+LVL_5_SIZE=8192
+LVL_5_TILE_COUNT=32
+
+LVL_6_SIZE=16384
+LVL_6_TILE_COUNT=64
 
 show_help()
 {
@@ -47,6 +50,12 @@ map_type()
 	IMAGE_SRC=$1
 	TARGET_FILE=`basename ${IMAGE_SRC}`
 	TARGET_DIR=$2
+	BASE_ZOOM_LEVEL=$3
+
+	VAR_NAME="LVL_${BASE_ZOOM_LEVEL}_SIZE"
+	eval BASE_SIZE=\$$VAR_NAME
+	VAR_NAME="LVL_${BASE_ZOOM_LEVEL}_TILE_COUNT"
+	eval BASE_TILE_COUNT=\$$VAR_NAME
 
 	MOD_TIME=0
 	if [ -e ${TARGET_FILE} ];
@@ -89,5 +98,5 @@ map_type()
 	svn commit -m "$MESSAGE" tiles/
 }
 
-map_type "http://www.benortherner.com/NorthernMap.jpg" "sascha"
-map_type "http://map.hirr.net/northernjb.jpg" "sirius"
+map_type "http://www.benortherner.com/NorthernMap.jpg" "sascha" 6
+map_type "http://map.hirr.net/northernjb.jpg" "sirius" 5
