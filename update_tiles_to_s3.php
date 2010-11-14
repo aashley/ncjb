@@ -1,0 +1,85 @@
+<?php
+
+require_once 'AWSSDKforPHP/sdk.class.php';
+require_once 'Console/ProgressBar.php';
+
+$bucketName = 'nc-jb-map-tiles';
+
+$baseDir = dirname(__FILE__) . '/tiles/';
+
+$directoryIterator = new RecursiveDirectoryIterator($baseDir);
+$recursiveIterator = new RecursiveIteratorIterator($directoryIterator);
+$regexIterator = new RegexIterator($recursiveIterator, '/^.+\.png$/i', RecursiveRegexIterator::GET_MATCH);
+
+$s3 = new AmazonS3();
+
+$filesToUpload = array();
+foreach( $regexIterator as $filename => $fileDetails )
+{
+	$targetFilename = str_replace($baseDir, '', $filename);
+	$filesToUpload[] = $targetFilename;
+}
+
+$progress = new Console_ProgressBar("%fraction% [%bar%] %percent% ETA: %estimate%", '=>', '-', 76, count($filesToUpload), array('ansi_terminal' => true, 'ansi_clear' => true));
+
+$count = 0;
+$failedFiles = array();
+foreach( $filesToUpload as $filename )
+{
+	$count++;
+
+	try
+	{
+		$headers = $s3->get_object_headers($bucketName, $filename);
+
+		$upload = FALSE;
+		if( $headers->isOK() )
+		{
+			$md5 = md5_file($baseDir . $filename);
+			$etag = str_replace('"', '', $headers->header['etag']);
+			if( $md5 != $etag )
+			{
+				$upload = TRUE;
+			}
+		}
+		else
+		{
+			$upload = TRUE;
+		}
+
+		if( $upload )
+		{
+			$upload_response = $s3->create_object($bucketName, $filename, array(
+						'fileUpload' => $baseDir . $filename,
+						'acl' => AmazonS3::ACL_PUBLIC,
+						'contentType' => 'image/png',
+						'headers' => array(
+							'Expires' => 360000,
+							),
+						'storage' => AmazonS3::STORAGE_REDUCED,
+						));
+
+			if( FALSE == $upload_response->isOK() )
+			{
+				$failedFiles[] = $filename;
+				print "\n"
+					.$upload_response->status . ' ' . $upload_response->body
+					."\n";
+			}
+		}
+	}
+	catch( Exception $e )
+	{
+		$failedFiles[] = $filename;
+		print "\n"
+			.$e->getMessage()
+			."\n";
+	}
+
+	$progress->update($count);
+}
+
+print "\n";
+
+print count($failedFiles) . " failed to upload.\n";
+

@@ -11,7 +11,8 @@ var map = null,
 	},
 	inEveTimeout = 30000,		// If we're in eve look for header updates every 10 seconds
 	outEveTimeout = 360000,		// If we're not in eve or get a request failure look every 60 seconds
-	eveHeaderTimeout = null;
+	eveHeaderTimeout = null,
+	tileUrlBase = "http://nc-jb-map-tiles.s3.amazonaws.com/";
 
 function createPin(title, position)
 {
@@ -216,9 +217,9 @@ $(document).ready(function ()
 			if(		coord.x < 0 || coord.x > maxTile
 				||	coord.y < 0 || coord.y > maxTile )
 			{
-				return "tiles/tile_black.png";
+				return tileUrlBase + "tile_black.png";
 			}
-			return "tiles/sascha/" + zoom + "/tile_" + coord.x + '_' + coord.y + ".png";
+			return tileUrlBase + "sascha/" + zoom + "/tile_" + coord.x + '_' + coord.y + ".png";
 		},
 		tileSize: new google.maps.Size(256,256),
 		isPng: true,
@@ -236,9 +237,9 @@ $(document).ready(function ()
 			if(		coord.x < 0 || coord.x > maxTile
 				||	coord.y < 0 || coord.y > maxTile )
 			{
-				return "tiles/tile_black.png";
+				return tileUrlBase + "tile_black.png";
 			}
-			return "tiles/sirius/" + zoom + "/tile_" + coord.x + '_' + coord.y + ".png";
+			return tileUrlBase + "sirius/" + zoom + "/tile_" + coord.x + '_' + coord.y + ".png";
 		},
 		tileSize: new google.maps.Size(256,256),
 		isPng: true,
