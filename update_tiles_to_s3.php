@@ -54,7 +54,7 @@ foreach( $filesToUpload as $filename )
 						'acl' => AmazonS3::ACL_PUBLIC,
 						'contentType' => 'image/png',
 						'headers' => array(
-							'Expires' => 360000,
+							'Cache-Control' => 'max-age=86400'
 							),
 						'storage' => AmazonS3::STORAGE_REDUCED,
 						));
