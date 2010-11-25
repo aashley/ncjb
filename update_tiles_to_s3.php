@@ -4,6 +4,7 @@ require_once 'AWSSDKforPHP/sdk.class.php';
 require_once 'Console/ProgressBar.php';
 
 $bucketName = 'nc-jb-map-tiles';
+$start = time();
 
 $baseDir = dirname(__FILE__) . '/tiles/';
 
@@ -23,6 +24,8 @@ foreach( $regexIterator as $filename => $fileDetails )
 $progress = new Console_ProgressBar("%fraction% [%bar%] %percent% ETA: %estimate%", '=>', '-', 76, count($filesToUpload), array('ansi_terminal' => true, 'ansi_clear' => true));
 
 $count = 0;
+$upToDateCount = 0;
+$uploadedCount = 0;
 $failedFiles = array();
 foreach( $filesToUpload as $filename )
 {
@@ -41,6 +44,7 @@ foreach( $filesToUpload as $filename )
 			{
 				$upload = TRUE;
 			}
+			$upToDateCount++;
 		}
 		else
 		{
@@ -54,7 +58,7 @@ foreach( $filesToUpload as $filename )
 						'acl' => AmazonS3::ACL_PUBLIC,
 						'contentType' => 'image/png',
 						'headers' => array(
-							'Cache-Control' => 'max-age=86400'
+							'Cache-Control' => 'max-age=259200'
 							),
 						'storage' => AmazonS3::STORAGE_REDUCED,
 						));
@@ -65,6 +69,10 @@ foreach( $filesToUpload as $filename )
 				print "\n"
 					.$upload_response->status . ' ' . $upload_response->body
 					."\n";
+			}
+			else
+			{
+				$uploadedCount++;
 			}
 		}
 	}
@@ -81,5 +89,22 @@ foreach( $filesToUpload as $filename )
 
 print "\n";
 
-print count($failedFiles) . " failed to upload.\n";
+$end = time();
+
+print "Completed in " . $progress->_formatSeconds($end - $start) . ".\n";
+
+if( $upToDateCount > 0 )
+{
+	print $upToDateCount . " files up to date.\n";
+}
+
+if( $uploadedCount > 0 )
+{
+	print $uploadedCount . " files uploaded.\n";
+}
+
+if( count($failedFiles) > 0 )
+{
+	print count($failedFiles) . " failed to upload.\n";
+}
 
