@@ -246,7 +246,7 @@ $(document).ready(function ()
 			if(		coord.x < 0 || coord.x > maxTile
 				||	coord.y < 0 || coord.y > maxTile )
 			{
-				return tileUrlBase + "tile_black.png";
+				return tileBase + "tile_black.png";
 			}
 			var tileUrlBase = tileBase;
 			if( tileHostMulti )
