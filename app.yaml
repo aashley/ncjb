@@ -1,5 +1,5 @@
 application: nc-jb-map
-version: 10
+version: 11
 runtime: python
 api_version: 1
 
@@ -9,10 +9,6 @@ handlers:
 
 - url: /js
   static_dir: js
-
-- url: /tiles
-  static_dir: tiles
-  expiration: "1d"
 
 - url: /images
   static_dir: images
@@ -35,6 +31,7 @@ skip_files:
 - ^(.*/)?.*\.sh$
 - ^(.*/)?.*/.svn/.*
 - ^(.*/)?.*bulkloader.*
+- ^(.*/)?.*tiles.*
 
 builtins:
 - datastore_admin: on

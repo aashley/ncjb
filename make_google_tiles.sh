@@ -96,7 +96,7 @@ map_type()
 	MESSAGE="Updated ${TARGET_DIR} map at ${MOD_TIME}"
 
 	svn commit -m "$MESSAGE" tiles/
-}
+}l
 
-map_type "http://www.benortherner.com/NorthernMap.jpg" "sascha" 6
+#map_type "http://www.benortherner.com/NorthernMap.jpg" "sascha" 6
 map_type "http://map.hirr.net/northernjb.jpg" "sirius" 5
