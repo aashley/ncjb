@@ -44,7 +44,10 @@ foreach( $filesToUpload as $filename )
 			{
 				$upload = TRUE;
 			}
-			$upToDateCount++;
+			else
+			{
+				$upToDateCount++;
+			}
 		}
 		else
 		{
