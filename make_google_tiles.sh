@@ -75,6 +75,7 @@ map_type()
 	cp ${TARGET_FILE} ${TARGET_DIR}.jpg
 
 	echo Converting Original to zoom level $BASE_ZOOM_LEVEL size...
+#convert ${TARGET_DIR}.jpg -resize ${BASE_SIZE}x${BASE_SIZE} ${TARGET_DIR}-resized.png
 	convert ${TARGET_DIR}.jpg -background Black -gravity center -extent ${BASE_SIZE}x${BASE_SIZE} ${TARGET_DIR}.png
 
 	zSize=$BASE_SIZE
@@ -96,7 +97,7 @@ map_type()
 	MESSAGE="Updated ${TARGET_DIR} map at ${MOD_TIME}"
 
 	svn commit -m "$MESSAGE" tiles/
-}l
+}
 
-#map_type "http://www.benortherner.com/NorthernMap.jpg" "sascha" 6
+map_type "http://benortherner.com/NorthernRoute.jpg" "sascha" 6
 map_type "http://map.hirr.net/northernjb.jpg" "sirius" 5
