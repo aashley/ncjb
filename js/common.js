@@ -281,8 +281,8 @@ $(document).ready(function ()
 	}
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
 
-	map.mapTypes.set('sirius', siriusMapType);
 	map.mapTypes.set('sascha', saschaMapType);
+	map.mapTypes.set('sirius', siriusMapType);
 
 	if(	$.cookie('ncjb_maptype') != null )
 	{
@@ -290,7 +290,7 @@ $(document).ready(function ()
 	}
 	else
 	{
-		map.setMapTypeId('sirius');
+		map.setMapTypeId('sascha');
 	}
 
 	google.maps.event.addListener(map, 'maptypeid_changed', function()
