@@ -4,6 +4,7 @@ require_once 'AWSSDKforPHP/sdk.class.php';
 require_once 'Console/ProgressBar.php';
 
 $bucketName = 'nc-jb-map-tiles';
+$distributionId = 'E1S5N0PGMPIF4S';
 $start = time();
 
 $baseDir = dirname(__FILE__) . '/tiles/';
@@ -13,6 +14,7 @@ $recursiveIterator = new RecursiveIteratorIterator($directoryIterator);
 $regexIterator = new RegexIterator($recursiveIterator, '/^.+\.png$/i', RecursiveRegexIterator::GET_MATCH);
 
 $s3 = new AmazonS3();
+$cdn = new AmazonCloudFront();
 
 $filesToUpload = array();
 foreach( $regexIterator as $filename => $fileDetails )
@@ -26,6 +28,7 @@ $progress = new Console_ProgressBar("%fraction% [%bar%] %percent% ETA: %estimate
 $count = 0;
 $upToDateCount = 0;
 $uploadedCount = 0;
+$uploadedFiles = array();
 $failedFiles = array();
 foreach( $filesToUpload as $filename )
 {
@@ -53,6 +56,7 @@ foreach( $filesToUpload as $filename )
 		{
 			$upload = TRUE;
 		}
+$upload = TRUE;
 
 		if( $upload )
 		{
@@ -75,6 +79,7 @@ foreach( $filesToUpload as $filename )
 			}
 			else
 			{
+				$uploadedFiles[] = $filename;
 				$uploadedCount++;
 			}
 		}
@@ -111,3 +116,43 @@ if( count($failedFiles) > 0 )
 	print count($failedFiles) . " failed to upload.\n";
 }
 
+/*
+$invalidationStart = time();
+
+print "Invalidating updated files from CDN...\n";
+
+$start = 0;
+while( $start < $uploadedCount )
+{
+	$files = array_slice($uploadedFiles, $start, 1000);
+	$start += 1000;
+	$response = $cdn->create_invalidation($distributionId, 'nc-jb-map-tiles ' . date('Y-m-d H:i:s'), $files);
+
+	print $start;
+	if( $response->isOK() )
+	{
+		while( $response->body->Status == 'InProgress' )
+		{
+			print '.';
+			sleep(30);
+			$response = $cdn->get_invalidation($distributionId, $response->body->Id);
+
+			if( FALSE == $response->isOK() )
+			{
+				print $response->body->Error->Message . "\n";
+				exit;
+			}
+		}
+	}
+	else
+	{
+		print $response->body->Error->Message . "\n";
+		exit;
+	}
+	print "\n";
+}
+
+$invalidationStop = time();
+
+print "Invalidation took " .  $progress->_formatSeconds($invalidationStop - $invalidationStart) . "\n";
+*/
