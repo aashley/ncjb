@@ -1,5 +1,5 @@
 application: nc-jb-map
-version: 11
+version: 100
 runtime: python
 api_version: 1
 
@@ -12,6 +12,15 @@ handlers:
 
 - url: /images
   static_dir: images
+
+- url: /feeds/.*
+  script: feeds.py
+
+- url: /editor.*
+  script: editor.py
+
+- url: /worker
+  script: worker.py
 
 - url: /.*
   script: map.py
@@ -32,6 +41,9 @@ skip_files:
 - ^(.*/)?.*/.svn/.*
 - ^(.*/)?.*bulkloader.*
 - ^(.*/)?.*tiles.*
+- ^(.*/)?.*\.jpg
+- ^(.*/)?.*\.csv
+- ^(.*/)?.*\.php
 
 builtins:
 - datastore_admin: on

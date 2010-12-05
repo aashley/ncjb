@@ -330,6 +330,7 @@ $(document).ready(function ()
 	// Setup Auto Complete on Search box
 	$("#search").autocomplete({
 			source: systemNames,
+			minLength: 2,
 			select: function(event, ui)
 			{
 				$.History.go(ui.item.value);

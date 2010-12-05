@@ -12,9 +12,9 @@
 <script type="text/javascript" src="js/jquery.cookie.js"></script>
 <script type="text/javascript" src="js/jquery.history.min.js"></script>
 <script type="text/javascript" src="js/json2.js"></script>
-<script type="text/javascript" src="systems"></script>
-<script type="text/javascript" src="js/common.js"></script>
-<script type="text/javascript" src="js/editor.js"></script>
+<script type="text/javascript" src="js/ncmap.js"></script>
+<script type="text/javascript" src="js/ncmapeditor.js"></script>
+<script type="text/javascript" src="js/editorstartup.js"></script>
 <script type="text/javascript">
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-346775-3']);
@@ -29,14 +29,23 @@ _gaq.push(['_trackPageview']);
 </head>
 <body>
 	<div id="map_canvas"></div>
-	<div id="dumpDialog">
-		<textarea id="dump"></textarea>
-	</div>
 	<div id="editBox">
 		<input id="editName" class="ui-state-default ui-corner-all"> <button id="deleteSystem">Delete</button>
 	</div>
-	<div id="searchBox">
-		<input id="search" class="ui-state-default ui-corner-all">
+	<div id="userControls">
+		<a href="{{ logoutUrl }}">Logout</a>
+	</div>
+	<div id="adminControls">
+		<select id="regionList"></select><br/>
+		<select id="constellationList"></select><br/>
+		<select id="systemList"></select><br/>
+		<div id="systemPanel">
+			<input type="button" id="centerExisting" value="Center Existing">
+			<input type="button" id="centerNew" value="Center New">
+			<input type="button" id="createLocation" value="Create Location">
+			<input type="button" id="saveLocation" value="Save Location">
+			<input type="button" id="deleteLocation" value="Delete Location">
+		</div>
 	</div>
 	<div id="deleteConfirmDialog">
 		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>This system will be permanently deleted and cannot be recovered. Are you sure?</p>

@@ -10,10 +10,20 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: Constellation
+  properties:
+  - name: region
+  - name: name
+
 - kind: System
   properties:
   - name: __key__
     direction: desc
+
+- kind: System
+  properties:
+  - name: constellation
+  - name: name
 
 - kind: System
   properties:

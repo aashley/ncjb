@@ -5,24 +5,55 @@ html
 
 body
 {
-	height: 100%;
 	margin: 0px;
 	padding: 0px;
 	font-size: 11px;
+	overflow: hidden;
+	font-family: Verdana, sans-serif;
 }
 
 #map_canvas
 {
+	position: absolute;
 	height: 100%;
 	z-index: 100;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
 }
 
 #adminControls
 {
 	position: absolute;
-	bottom: 20px;
-	right: 20px;
+	top: 5px;
+	right: 5px;
 	z-index: 200;
+	background-color: black;
+	color: white;
+	width: 140px;
+}
+
+#adminControls select
+{
+	width: 140px;
+}
+
+#adminControls input[type=button]
+{
+	width: 140px;
+}
+
+#systemPanel
+{
+	display: none;
+}
+
+#userControls
+{
+	position: absolute;
+	bottom: 30px;
+	right: 5px;
 }
 
 #dump
@@ -36,14 +67,17 @@ body
 {
 	position: absolute;
 	z-index: 200;
-	top: 20px;
-	right: 20px;
+	top: 5px;
+	right: 5px;
+	vertical-align: top;
 }
 
 #search
 {
 	padding: 4px;
 	font-size: 15px;
+	width: 140px;
+	height: 19px;
 }
 
 .ui-autocomplete
@@ -89,4 +123,25 @@ body
 	height: 170px;
 	width: 576px;
 	overflow: auto;
+}
+
+#message
+{
+	position: absolute;
+	top: 20px;
+	right: 200px;
+	left: 200px;
+	z-index: 200;
+}
+
+#message div
+{
+	margin: 0 auto;
+	padding: 0pt 0.7em;
+}
+
+#message div span
+{
+	float: left;
+	margin-right: 0.3em;
 }

@@ -2,49 +2,45 @@
 
 $dbh = new PDO('mysql:host=localhost;dbname=evemaps', 'root', '');
 
-$mode = '';
-if( isset($_GET['mode']) )
+$modes = array('regions', 'constellations', 'solarsystems');
+
+foreach( $modes as $mode )
 {
-	$mode = $_GET['mode'];
-}
+	print $mode . ".csv ... ";
 
-switch( $mode )
-{
-	case 'solarsystems':
-		$sql = "SELECT regionID, constellationID, solarSystemID, solarSystemName FROM mapSolarSystems WHERE regionID < 11000001";
-		break;
-
-	case 'constellations':
-		$sql = "SELECT regionID, constellationID, constellationName FROM mapConstellations WHERE regionID < 11000001";
-		break;
-
-	case 'regions':
-	default:
-		$sql = "SELECT regionID, regionName FROM mapRegions WHERE regionID < 11000001";
-		break;
-}
-
-$first = TRUE;
-
-$filename = tempnam('/tmp', 'locations-');
-
-$fp = fopen($filename, 'w');
-
-$result = $dbh->query($sql);
-while( $row = $result->fetch(PDO::FETCH_ASSOC) )
-{
-	if( $first )
+	switch( $mode )
 	{
-		$first = FALSE;
-		fputcsv($fp, array_keys($row));
+		case 'solarsystems':
+			$sql = "SELECT constellationID, solarSystemID, solarSystemName FROM mapSolarSystems WHERE regionID < 11000001";
+			break;
+	
+		case 'constellations':
+			$sql = "SELECT regionID, constellationID, constellationName FROM mapConstellations WHERE regionID < 11000001";
+			break;
+	
+		case 'regions':
+		default:
+			$sql = "SELECT regionID, regionName FROM mapRegions WHERE regionID < 11000001";
+			break;
 	}
+	
+	$first = TRUE;
+	
+	$fp = fopen($mode . '.csv', 'w');
+	
+	$result = $dbh->query($sql);
+	while( $row = $result->fetch(PDO::FETCH_ASSOC) )
+	{
+		if( $first )
+		{
+			$first = FALSE;
+			fputcsv($fp, array_keys($row));
+		}
+	
+		fputcsv($fp, $row);
+	}
+	
+	fclose($fp);
 
-	fputcsv($fp, $row);
+	print "done.\n";
 }
-
-fclose($fp);
-
-header('Content-Type: text/plain');
-readfile($filename);
-
-unlink($filename);

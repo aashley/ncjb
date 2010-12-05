@@ -7,12 +7,13 @@
 <link rel="stylesheet" href="css/ncjb/jquery-ui-1.8.4.custom.css">
 <link rel="stylesheet" href="css/style.css">
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/jquery-ui.min.js"></script>
 <script type="text/javascript" src="js/jquery.cookie.js"></script>
 <script type="text/javascript" src="js/jquery.history.min.js"></script>
 <script type="text/javascript" src="js/json2.js"></script>
-<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/ncmap.js"></script>
+<script type="text/javascript" src="js/startup.js"></script>
 <script type="text/javascript">
 
 inEve = {{ inEve }};
@@ -35,6 +36,9 @@ _gaq.push(['_trackPageview']);
 		<input id="followMe" type="checkbox"><label for="followMe">Follow</label>
 		<input id="search" class="ui-state-default ui-corner-all">
 		<button id="about">About</button>
+	</div>
+	<div id="userControls">
+		<a href="/editor">Contribute</a>
 	</div>
 	<div id="aboutDialog">
 		<h3>Copyright</h3>
