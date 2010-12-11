@@ -25,8 +25,12 @@ class Editor(webapp.RequestHandler):
 			template_values = {
 				'inEve': 'false',
 				'currentSystem': 'null',
-				'logoutUrl': users.create_logout_url('/')
+				'logoutUrl': users.create_logout_url('/'),
+				'tileVersion': ''
 			}
+			query = TileVersion.all();
+			tileVersion = query.get();
+			template_values['tileVersion'] = tileVersion.version
 			if 'solarsystemname' in eveHeaders and len(eveHeaders['solarsystemname']) > 0:
 				template_values['inEve'] = 'true'
 				template_values['currentSystem'] = '"' + eveHeaders['solarsystemname'] + '"';

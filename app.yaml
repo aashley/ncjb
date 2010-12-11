@@ -18,6 +18,11 @@ handlers:
 
 - url: /editor.*
   script: editor.py
+  login: required
+
+- url: /admin.*
+  script: admin.py
+  login: admin
 
 - url: /worker
   script: worker.py

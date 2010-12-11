@@ -102,7 +102,7 @@ NcMapEditor.prototype.setupUi = function()
 				}
 
 				ncMap.activateSystemPanel($('#systemList').val());
-			});
+			}).change();
 
 	$('#centerExisting').click(function(e)
 		{

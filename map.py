@@ -21,8 +21,12 @@ class Map(webapp.RequestHandler):
 		eveHeaders = getEveHeaders(self.request.headers)
 		template_values = {
 			'inEve': 'false',
-			'currentSystem': 'null'
+			'currentSystem': 'null',
+			'tileVersion': ''
 		}
+		query = TileVersion.all();
+		tileVersion = query.get();
+		template_values['tileVersion'] = tileVersion.version
 		if 'solarsystemname' in eveHeaders and len(eveHeaders['solarsystemname']) > 0:
 			template_values['inEve'] = 'true'
 			template_values['currentSystem'] = '"' + eveHeaders['solarsystemname'] + '"';

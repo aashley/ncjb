@@ -14,7 +14,8 @@
 <script type="text/javascript" src="js/json2.js"></script>
 <script type="text/javascript" src="js/ncmap.js"></script>
 <script type="text/javascript" src="js/ncmapeditor.js"></script>
-<script type="text/javascript" src="js/editorstartup.js"></script>
+<script type="text/javascript" src="js/ncmapadmin.js"></script>
+<script type="text/javascript" src="js/adminstartup.js"></script>
 <script type="text/javascript">
 
 tileVersion = '{{ tileVersion }}';
@@ -39,19 +40,11 @@ _gaq.push(['_trackPageview']);
 		<a href="{{ logoutUrl }}">Logout</a>
 	</div>
 	<div id="adminControls">
-		<select id="regionList"></select><br/>
-		<select id="constellationList"></select><br/>
 		<select id="systemList"></select><br/>
 		<div id="systemPanel">
-			<input type="button" id="centerExisting" value="Center Existing">
-			<input type="button" id="centerNew" value="Center New">
-			<input type="button" id="createLocation" value="Create Location">
-			<input type="button" id="saveLocation" value="Save Location">
-			<input type="button" id="deleteLocation" value="Delete Location">
+			<span class="choices">Loading...</span>
+			<input type="button" id="saveChoice" value="Save Choice">
 		</div>
-	</div>
-	<div id="deleteConfirmDialog">
-		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>This system will be permanently deleted and cannot be recovered. Are you sure?</p>
 	</div>
 </body>
 </html>

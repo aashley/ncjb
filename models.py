@@ -4,6 +4,9 @@ from google.appengine.ext import db, webapp
 # Data Model
 #
 
+class TileVersion(db.Model):
+	version = db.StringProperty(required=True)
+
 class Region(db.Model):
 	eveId = db.IntegerProperty(required=True)
 	name = db.StringProperty(required=True)
@@ -57,4 +60,17 @@ class SubmittedMapLocation(db.Model):
 	mapType = db.StringProperty()
 	user = db.UserProperty()
 	removeLocation = db.BooleanProperty()
+
+	def getJsonObject(self):
+		finalSystem = {
+			"id": str(self.key()),
+			"systemName": self.system.name,
+			"lat": self.location.lat,
+			"lon": self.location.lon,
+			"mapType": self.mapType,
+			"user": str(self.user),
+			"removeLocation": self.removeLocation
+		}
+		return finalSystem
+
 

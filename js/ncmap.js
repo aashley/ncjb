@@ -24,7 +24,7 @@ function NcMap()
 
 	this.tileHostMulti = true;
 	this.tileHostCount = 6;
-	this.tileBase = "http://tiles.lyarna.net/";
+	this.tileBase = "http://tiles.lyarna.net/" + tileVersion + '/';
 }
 
 NcMap.prototype.init = function()
@@ -44,11 +44,11 @@ NcMap.prototype.setupUi = function()
 			source: function( request, response )
 			{
 				var term = request.term;
-/*				if( term in acCache )
+				if( term in acCache )
 				{
 					response(acCache[term]);
 					return;
-				}*/
+				}
 
 				request['mapType'] = ncMap.googleMap.getMapTypeId();
 				lastXhr = $.getJSON("/feeds/systemSearch", 
@@ -67,7 +67,7 @@ NcMap.prototype.setupUi = function()
 				ncMap.activateSystemByName(ui.item.value, true);
 
 				// Record selection in GA
-				//_gaq.push(['_trackPageview', '/search/' + ui.item.value]);
+				_gaq.push(['_trackPageview', '/search/' + ui.item.value]);
 			}
 		}).keyup(function(event)
 			{
@@ -99,7 +99,7 @@ NcMap.prototype.setupUi = function()
 		//	headerTimeout(outEveTimeout);
 			_gaq.push(['_trackPageview', '/follow/disable']);
 		}
-	});
+	}).hide();
 
 	$("#about").button({
 		icons: {
@@ -172,8 +172,8 @@ NcMap.prototype.setupMap = function()
 		tileSize: new google.maps.Size(256,256),
 		isPng: true,
 		name: "Sascha",
-		minZoom: 3,
-		maxZoom: 6,
+		minZoom: 2,
+		maxZoom: 5,
 		alt: "Northern Coalition Jump Bridge Network by Sascha Ales"
 	};
 	var saschaMapType = new google.maps.ImageMapType(saschaTypeOptions);
@@ -286,7 +286,6 @@ NcMap.prototype.createMarker = function( title, position, draggable )
 NcMap.prototype.activateSystemByName = function( systemName, zoomIn )
 {
 	var ncMap = this;
-	console.log('activating ' + systemName);
 
 	if( this.activeMarker != null )
 	{
@@ -338,7 +337,6 @@ NcMap.prototype.activateSystemByName = function( systemName, zoomIn )
 	if( typeof zoomIn != 'undefined' && zoomIn == true )
 	{
 		var newZoom = this.googleMap.mapTypes[mapType].maxZoom;
-		console.log("mapType: " + mapType + " zoom: " + newZoom);
 		this.googleMap.setZoom(newZoom);
 	}
 	marker.setMap(this.googleMap);

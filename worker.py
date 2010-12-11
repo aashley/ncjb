@@ -22,6 +22,10 @@ class UtilWorker(webapp.RequestHandler):
 
 		work = self.request.get('work')
 
+		if work == 'flush':
+			memcache.flush_all()
+			self.response.out.write('memcache flushed')
+
 		if work == 'region':
 			regionId = self.request.get('regionId')
 			region = Region.get(db.Key(regionId))

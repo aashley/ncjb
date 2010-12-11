@@ -49,6 +49,12 @@ body
 	display: none;
 }
 
+#systemPanel .choices
+{
+	display: block;
+	padding: 0.5em;
+}
+
 #userControls
 {
 	position: absolute;
