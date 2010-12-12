@@ -30,7 +30,7 @@ function NcMap()
 	this.followModeEnabled = false;
 	this.followModeActive = false;
 	this.locationCheckCount = 0;
-	this.locationCheckFreq = 2000;
+	this.locationCheckFreq = 5000;
 	this.locationCheckMinFreq = 1000;
 	this.locationCheckMaxFreq = 120000;
 	this.locationCheckTimeout = null;
@@ -41,6 +41,12 @@ NcMap.prototype.init = function()
 	var ncMap = this;
 	this.setupUi();
 	this.setupMap();
+
+	if( typeof(CCPEVE) != 'undefined' )
+	{
+		var trustableUrl = 'http://' + location.host;
+		CCPEVE.requestTrust(trustableUrl);
+	}
 }
 
 NcMap.prototype.setupUi = function()
@@ -110,6 +116,7 @@ NcMap.prototype.setupUi = function()
 		}
 	});
 
+	ncMap.disableFollow();
 	if( ncMap.currentLocation != null )
 	{
 		ncMap.enableFollow();
@@ -396,7 +403,7 @@ NcMap.prototype.enableFollow = function()
 
 NcMap.prototype.disableFollow = function()
 {
-	console.log('disable follow');
+//	console.log('disable follow');
 	var widget = $('#followMe').button('widget');
 	widget.hide();
 	this.followModeEnabled = false;
@@ -408,14 +415,14 @@ NcMap.prototype.disableFollow = function()
 
 NcMap.prototype.follow = function()
 {
-	console.log('start follow');
+//	console.log('start follow');
 	this.followModeActive = true;
 	this.showFollowedLocation();
 }
 
 NcMap.prototype.stopFollow = function()
 {
-	console.log('stop follow');
+//	console.log('stop follow');
 	this.followModeActive = false;
 }
 
@@ -441,7 +448,7 @@ NcMap.prototype.updateLocation = function()
 
 	this.locationCheckCount++;
 
-	console.log('Location Check: ' + this.locationCheckCount + ' ' + this.locationCheckFreq);
+//	console.log('Location Check: ' + this.locationCheckCount + ' ' + this.locationCheckFreq);
 	$.getJSON('/eve',
 			function(eveHeaders)
 			{
@@ -485,7 +492,7 @@ NcMap.prototype.updateLocation = function()
 				}
 				else
 				{
-					if( false == ncMap.followModeEnabled )
+					if( false == ncMap.followModeEnabled && ncMap.currentSystem != null )
 					{
 						ncMap.enableFollow();
 					}
