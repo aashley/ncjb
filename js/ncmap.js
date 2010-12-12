@@ -25,6 +25,15 @@ function NcMap()
 	this.tileHostMulti = true;
 	this.tileHostCount = 6;
 	this.tileBase = "http://tiles.lyarna.net/" + tileVersion + '/';
+
+	this.currentSystem = currentSystem;
+	this.followModeEnabled = false;
+	this.followModeActive = false;
+	this.locationCheckCount = 0;
+	this.locationCheckFreq = 2000;
+	this.locationCheckMinFreq = 1000;
+	this.locationCheckMaxFreq = 120000;
+	this.locationCheckTimeout = null;
 }
 
 NcMap.prototype.init = function()
@@ -91,15 +100,24 @@ NcMap.prototype.setupUi = function()
 	{
 		if( $(this).is(':checked') )
 		{
-		//	updateEveHeaders();
+			ncMap.follow();
 			_gaq.push(['_trackPageview', '/follow/enable']);
 		}
 		else
 		{
-		//	headerTimeout(outEveTimeout);
+			ncMap.stopFollow();
 			_gaq.push(['_trackPageview', '/follow/disable']);
 		}
-	}).hide();
+	});
+
+	if( ncMap.currentLocation != null )
+	{
+		ncMap.enableFollow();
+	}
+	else
+	{
+		ncMap.updateLocation();
+	}
 
 	$("#about").button({
 		icons: {
@@ -287,10 +305,7 @@ NcMap.prototype.activateSystemByName = function( systemName, zoomIn )
 {
 	var ncMap = this;
 
-	if( this.activeMarker != null )
-	{
-		this.activeMarker.setMap(null);
-	}
+	this.deactivateMarker();
 
 	var marker = null;
 	var mapType = this.googleMap.getMapTypeId();
@@ -367,4 +382,121 @@ NcMap.prototype.findAndActivateSystem = function(systemName)
 					ncMap.activateSystemByName(data[0].value);
 				}
 			});
+}
+
+NcMap.prototype.enableFollow = function()
+{
+	console.log('enable follow');
+
+	var widget = $('#followMe').button('widget');
+	widget.show();
+	this.followModeEnabled = true;
+	this.updateLocation();
+}
+
+NcMap.prototype.disableFollow = function()
+{
+	console.log('disable follow');
+	var widget = $('#followMe').button('widget');
+	widget.hide();
+	this.followModeEnabled = false;
+	if( this.followModeActive )
+	{
+		this.deactivateMarker();
+	}
+}
+
+NcMap.prototype.follow = function()
+{
+	console.log('start follow');
+	this.followModeActive = true;
+	this.showFollowedLocation();
+}
+
+NcMap.prototype.stopFollow = function()
+{
+	console.log('stop follow');
+	this.followModeActive = false;
+}
+
+NcMap.prototype.showFollowedLocation = function()
+{
+	if( this.followModeActive && this.currentSystem != null )
+	{
+		//$.History.go(this.currentSystem);
+		this.activateSystemByName(this.currentSystem);
+
+		_gaq.push(['_trackPageview', '/follow/' + this.currentSystem]);
+	}
+}
+
+NcMap.prototype.updateLocation = function()
+{
+	if( this.locationCheckTimeout != null )
+	{
+		return;
+	}
+
+	var ncMap = this;
+
+	this.locationCheckCount++;
+
+	console.log('Location Check: ' + this.locationCheckCount + ' ' + this.locationCheckFreq);
+	$.getJSON('/eve',
+			function(eveHeaders)
+			{
+				if( typeof(eveHeaders['solarsystemname']) != 'undefined' )
+				{
+					if( ncMap.currentSystem != eveHeaders['solarsystemname'] )
+					{
+						// location has changed since last check
+						ncMap.locationCheckFreq = ncMap.locationCheckFreq - Math.floor((ncMap.locationCheckFreq / 12) * 7);
+						if( ncMap.locationCheckFreq < ncMap.locationCheckMinFreq )
+						{
+							ncMap.locationCheckFreq = ncMap.locationCheckMinFreq;
+						}
+					}
+					else
+					{
+						// location has not changed since last check
+						ncMap.locationCheckFreq = ncMap.locationCheckFreq + Math.floor(ncMap.locationCheckFreq / 4);
+						if( ncMap.locationCheckFreq > ncMap.locationCheckMaxFreq )
+						{
+							ncMap.locationCheckFreq = ncMap.locationCheckMaxFreq;
+						}
+					}
+					//$('#userControls').html(ncMap.locationCheckFreq);
+					ncMap.currentSystem = eveHeaders['solarsystemname'];
+					ncMap.showFollowedLocation();
+				}
+				else
+				{
+					ncMap.currentSystem = null;
+				}
+
+				if( ncMap.locationCheckCount > 2 && ncMap.currentSystem == null )
+				{
+					if( true == ncMap.followModeEnabled )
+					{
+						ncMap.disableFollow();
+					}
+					clearTimeout(ncMap.locationCheckTimeout);
+					ncMap.locationCheckTimeout = null;
+				}
+				else
+				{
+					if( false == ncMap.followModeEnabled )
+					{
+						ncMap.enableFollow();
+					}
+					ncMap.locationCheckTimeout = setTimeout(function(thisObj)
+						{
+							thisObj.locationCheckTimeout = null;
+							thisObj.updateLocation();
+						},
+						ncMap.locationCheckFreq,
+						ncMap);
+				}
+			});
+
 }
