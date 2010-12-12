@@ -13,6 +13,11 @@ NcMapEditor.prototype.init = function()
 {
 	NcMap.prototype.init.apply(this, arguments);
 
+	this.loadRegions();
+}
+
+NcMapEditor.prototype.loadRegions = function()
+{
 	var ncMap = this;
 
 	$.getJSON('/feeds/regions',
@@ -26,16 +31,23 @@ NcMapEditor.prototype.init = function()
 				}
 				$('#regionList').change();
 			});
-}
+};
 
 NcMapEditor.prototype.setupMap = function()
 {
 	NcMap.prototype.setupMap.apply(this, arguments);
 
+	var ncMap = this;
+
 	this.selectedIcon = new google.maps.MarkerImage('/images/activecrosshair-new.png',
 			new google.maps.Size(30,30),
 			new google.maps.Point(0,0),
 			new google.maps.Point(15,15));
+
+	google.maps.event.addListener(ncMap.googleMap, 'maptypeid_changed', function()
+		{
+			ncMap.loadRegions();
+		});
 }
 
 NcMapEditor.prototype.setupUi = function()

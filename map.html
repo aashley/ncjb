@@ -11,9 +11,6 @@
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/jquery-ui.min.js"></script>
 <script type="text/javascript" src="js/jquery.cookie.js"></script>
 <script type="text/javascript" src="js/jquery.history.min.js"></script>
-<script type="text/javascript" src="js/json2.js"></script>
-<script type="text/javascript" src="js/ncmap.js"></script>
-<script type="text/javascript" src="js/startup.js"></script>
 <script type="text/javascript">
 
 inEve = {{ inEve }};
@@ -30,6 +27,9 @@ _gaq.push(['_trackPageview']);
 	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 })();
 </script>
+<script type="text/javascript" src="js/json2.js"></script>
+<script type="text/javascript" src="js/ncmap.js"></script>
+<script type="text/javascript" src="js/startup.js"></script>
 </head>
 <body>
 	<div id="map_canvas"></div>
@@ -57,6 +57,7 @@ _gaq.push(['_trackPageview']);
 					<li>Hash mark linking uses search to do look ups. So <a href="http://nc-jb-map.appspot.com/#tvn">http://nc-jb-map.appspot.com/#tvn</a> works as expected now.</li>
 					<li>New editor interface so anyone can contribute updated locations for systems. This is still a work in progress so some things aren't working yet, ie suggesting a system be deleted.</li>
 					<li>Follow me has not yet been ported to the new map code. It will be done soon, though its not much use without the locations database be populated. Why don't you go help fix that? :)</li>
+					<li><strong>Known Issue:</strong> There are issues with the editor when switching between map types. When changing map types in the editor, reload the page after changing map type.</li>
 				</ul>
 				<strong>Version 11</strong>
 				<ul>

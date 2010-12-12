@@ -18,12 +18,19 @@ NcMapAdmin.prototype.init = function()
 
 NcMapAdmin.prototype.setupMap = function()
 {
+	var ncMap = this;
+
 	NcMapEditor.prototype.setupMap.apply(this, arguments);
 
 	this.possibleIcon =  new google.maps.MarkerImage('/images/possiblecrosshair-new.png',
 			new google.maps.Size(30,30),
 			new google.maps.Point(0,0),
 			new google.maps.Point(15,15));
+
+	google.maps.event.addListener(ncMap.googleMap, 'maptypeid_changed', function()
+		{
+			ncMap.loadSystemsWithSubmissions();
+		});
 }
 
 NcMapAdmin.prototype.setupUi = function()
@@ -59,6 +66,8 @@ NcMapAdmin.prototype.loadSystemsWithSubmissions = function()
 {
 	var ncMap = this;
 
+	$('#systemPanel .choices').empty();
+	$('#systemPanel').hide();
 	$.getJSON('/admin/systemsWithSubmissions',
 			{
 				'mapType': ncMap.googleMap.getMapTypeId()
