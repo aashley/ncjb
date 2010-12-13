@@ -8,6 +8,7 @@ $distributionId = 'E1S5N0PGMPIF4S';
 $start = time();
 
 $baseDir = dirname(__FILE__) . '/tiles/';
+$tileVersion = trim(`svnversion $baseDir`);
 
 $directoryIterator = new RecursiveDirectoryIterator($baseDir);
 $recursiveIterator = new RecursiveIteratorIterator($directoryIterator);
@@ -60,7 +61,7 @@ $upload = TRUE;
 
 		if( $upload )
 		{
-			$upload_response = $s3->create_object($bucketName, $filename, array(
+			$upload_response = $s3->create_object($bucketName, $tileVersion . '/' . $filename, array(
 						'fileUpload' => $baseDir . $filename,
 						'acl' => AmazonS3::ACL_PUBLIC,
 						'contentType' => 'image/png',
@@ -115,6 +116,8 @@ if( count($failedFiles) > 0 )
 {
 	print count($failedFiles) . " failed to upload.\n";
 }
+
+print "New tile version: " . $tileVersion . "\n";
 
 /*
 $invalidationStart = time();
