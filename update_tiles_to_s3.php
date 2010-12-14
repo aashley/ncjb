@@ -117,7 +117,8 @@ if( count($failedFiles) > 0 )
 	print count($failedFiles) . " failed to upload.\n";
 }
 
-print "New tile version: " . $tileVersion . "\n";
+print "New tile version: " . $tileVersion . "\n"
+	. "http://nc-jb-map.appspot.com/admin/tiles?version=" . $tileVersion . "\n";
 
 /*
 $invalidationStart = time();
