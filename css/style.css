@@ -15,10 +15,9 @@ body
 #map_canvas
 {
 	position: absolute;
-	height: 100%;
 	z-index: 100;
 	top: 0;
-	bottom: 0;
+	bottom: 15px;
 	left: 0;
 	right: 0;
 }
@@ -58,7 +57,7 @@ body
 {
 color: white;
 	position: absolute;
-	bottom: 30px;
+	bottom: 45px;
 	right: 5px;
 }
 
@@ -150,4 +149,14 @@ color: white;
 {
 	float: left;
 	margin-right: 0.3em;
+}
+
+#footerAd
+{
+	position: absolute;
+	background-color: black;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 15px;
 }
