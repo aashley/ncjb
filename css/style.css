@@ -55,10 +55,11 @@ body
 
 #userControls
 {
-color: white;
+	color: white;
 	position: absolute;
 	bottom: 45px;
 	right: 5px;
+	z-index: 200;
 }
 
 #dump
