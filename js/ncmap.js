@@ -17,6 +17,7 @@ function NcMap()
 	this.defaultIconShape = null;
 
 	this.markerCollection = {
+		'clusterfuck': {},
 		'sascha': {},
 		'sirius': {}
 	};
@@ -176,8 +177,8 @@ NcMap.prototype.setupMap = function()
 		"type": 'poly'
 	};
 
-	// Sasch Map Type
-	var saschaTypeOptions = {
+	// Clusterfuck Map Type
+	var cfTypeOptions = {
 		getTileUrl: function(coord, zoom) {
 			var maxTile = Math.pow(2, zoom) - 1;
 			if(		coord.x < 0 || coord.x > maxTile
@@ -192,44 +193,16 @@ NcMap.prototype.setupMap = function()
 				var hostNumber = tileSum % ncMap.tileHostCount;
 				tileUrlBase = tileUrlBase.replace('tiles', 'tiles' + hostNumber);
 			}
-			return tileUrlBase + "sascha/" + zoom + "/tile_" + coord.x + '_' + coord.y + ".png";
+			return tileUrlBase + "clusterfuck/" + zoom + "/tile_" + coord.x + '_' + coord.y + ".png";
 		},
 		tileSize: new google.maps.Size(256,256),
 		isPng: true,
-		name: "Sascha",
+		name: "Clusterfuck",
 		minZoom: 2,
 		maxZoom: 5,
-		alt: "Northern Coalition Jump Bridge Network by Sascha Ales"
+		alt: "Clusterfuck Jump Bridge Network"
 	};
-	var saschaMapType = new google.maps.ImageMapType(saschaTypeOptions);
-
-	// Sirius Map Type
-	var siriusTypeOptions = {
-		getTileUrl: function(coord, zoom) {
-			var maxTile = Math.pow(2, zoom) - 1;
-			if(		coord.x < 0 || coord.x > maxTile
-				||	coord.y < 0 || coord.y > maxTile )
-			{
-				return ncMap.tileBase + "tile_black.png";
-			}
-			var tileUrlBase = ncMap.tileBase;
-			if( ncMap.tileHostMulti )
-			{
-				var tileSum = coord.x + coord.y;
-				var hostNumber = tileSum % ncMap.tileHostCount;
-				tileUrlBase = tileUrlBase.replace('tiles', 'tiles' + hostNumber);
-			}
-			return tileUrlBase + "sirius/" + zoom + "/tile_" + coord.x + '_' + coord.y + ".png";
-		},
-		tileSize: new google.maps.Size(256,256),
-		isPng: true,
-		name: "Sirius",
-		minZoom: 2,
-		maxZoom: 5,
-		alt: "Northern Coalition Jump Bridge Network by the Sirius Project"
-	};
-	var siriusMapType = new google.maps.ImageMapType(siriusTypeOptions);
-	ncMap
+	var cfMapType = new google.maps.ImageMapType(cfTypeOptions);
 
 	var initialLatlng = new google.maps.LatLng(0,0);
 	var mapOptions = {
@@ -238,16 +211,15 @@ NcMap.prototype.setupMap = function()
 		center: initialLatlng,
 		disableDefaultUI: true,
 		navigationControl: true,
-		mapTypeControl: true,
+		mapTypeControl: false,
 		mapTypeControlOptions: {
-			mapTypeIds: ['sascha', 'sirius'],
+			mapTypeIds: ['clusterfuck'],
 			position: google.maps.ControlPosition.BOTTOM_RIGHT
 		}
 	}
 	ncMap.googleMap = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
 
-	ncMap.googleMap.mapTypes.set('sascha', saschaMapType);
-	ncMap.googleMap.mapTypes.set('sirius', siriusMapType);
+	ncMap.googleMap.mapTypes.set('clusterfuck', cfMapType);
 
 	if(	$.cookie('ncjb_maptype') != null )
 	{
@@ -255,7 +227,7 @@ NcMap.prototype.setupMap = function()
 	}
 	else
 	{
-		ncMap.googleMap.setMapTypeId('sascha');
+		ncMap.googleMap.setMapTypeId('clusterfuck');
 	}
 
 	google.maps.event.addListener(ncMap.googleMap, 'maptypeid_changed', function()
