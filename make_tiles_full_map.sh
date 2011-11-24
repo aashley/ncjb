@@ -6,7 +6,6 @@ LVL_3_TILE_COUNT=8
 LVL_4_SIZE=4096
 LVL_4_TILE_COUNT=16
 
-# Level 5
 LVL_5_SIZE=8192
 LVL_5_TILE_COUNT=32
 
@@ -25,9 +24,15 @@ cut()
 	SOURCE=$2
 	PERROW=$3
 	TARGET_DIR=$4
+	REDUCE_COLOURS=$5
 
 	SCRATCH_SOURCE="scratch_$SOURCE";
-	convert "$SOURCE" -colors 256 "$SCRATCH_SOURCE";
+	if [ $REDUCE_COLOURS -eq 1 ];
+	then
+		convert "$SOURCE" -colors 256 "$SCRATCH_SOURCE";
+	else
+		cp "$SOURCE" "$SCRATCH_SOURCE";
+	fi
 	convert -crop 256x256 "$SCRATCH_SOURCE" tile_%d.png;
 	rm "$SCRATCH_SOURCE";
 	TILECOUNT=`ls -1 tile_*.png | wc -l`;
@@ -44,8 +49,14 @@ cut()
 		fi
 
 #		echo "Tile: $c X: $X Y: $Y";
-		mv tile_${c}.png tiles/$TARGET_DIR/$ZOOMLEVEL/tile_${X}_${Y}.png;
-		mogrify -colors 256 -page 256x256 +profile "xmp" tiles/$TARGET_DIR/$ZOOMLEVEL/tile_${X}_${Y}.png;
+#		mv tile_${c}.png tiles/$TARGET_DIR/$ZOOMLEVEL/tile_${X}_${Y}.png;
+		if [ $REDUCE_COLOURS -eq 1 ];
+		then
+			mogrify -colors 256 tile_${c}.png;
+		fi
+		mogrify -page 256x256 +profile "*" tile_${c}.png;
+		pngcrush -q tile_${c}.png tiles/$TARGET_DIR/$ZOOMLEVEL/tile_${X}_${Y}.png;
+		rm tile_${c}.png;
 
 		X=$(( $X+1 ));
 	done
@@ -57,6 +68,9 @@ map_type()
 	TARGET_FILE=`basename ${IMAGE_SRC}`
 	TARGET_DIR=$2
 	BASE_ZOOM_LEVEL=$3
+	END_ZOOM_LEVEL=$4
+	BACKGROUND_COLOR="$5"
+	REDUCE_COLOURS=$6 # Whether should be reduced to 256 colours 1 to reduce 0 to ignore
 
 	VAR_NAME="LVL_${BASE_ZOOM_LEVEL}_SIZE"
 	eval BASE_SIZE=\$$VAR_NAME
@@ -81,15 +95,14 @@ map_type()
 	cp ${TARGET_FILE} ${TARGET_DIR}.jpg
 
 	echo Converting Original to zoom level $BASE_ZOOM_LEVEL size...
-#convert ${TARGET_DIR}.jpg -resize ${BASE_SIZE}x${BASE_SIZE} ${TARGET_DIR}-resized.png
-	convert ${TARGET_DIR}.jpg -background Black -gravity center -extent ${BASE_SIZE}x${BASE_SIZE} ${TARGET_DIR}.png
+	convert ${TARGET_DIR}.jpg -background "$BACKGROUND_COLOR" -gravity center -extent ${BASE_SIZE}x${BASE_SIZE} ${TARGET_DIR}.png
 
 	zSize=$BASE_SIZE
 	zCount=$BASE_TILE_COUNT
-	for (( z=$BASE_ZOOM_LEVEL; z>=2; z-- ))
+	for (( z=$BASE_ZOOM_LEVEL; z>=$END_ZOOM_LEVEL; z-- ))
 	do
 		echo "Zoom Level $z (${zSize}px ${zCount} tiles)..."
-		cut $z ${TARGET_DIR}.png $zCount $TARGET_DIR
+		cut $z ${TARGET_DIR}.png $zCount $TARGET_DIR $REDUCE_COLOURS
 
 		zSize=$(( zSize / 2 ))
 		zCount=$(( zCount / 2 ))
@@ -98,13 +111,7 @@ map_type()
 	done
 
 	rm ${TARGET_DIR}.jpg ${TARGET_DIR}.png
-
-	MOD_TIME=`stat -c %y ${TARGET_FILE}`
-	MESSAGE="Updated ${TARGET_DIR} map at ${MOD_TIME}"
-
-	svn commit -m "$MESSAGE" tiles/
 }
 
-map_type "http://dl.dropbox.com/u/39006524/Clusterfuck-JB-Map.jpg" "clusterfuck"
-#map_type "http://benortherner.com/NorthernRoute.jpg" "sascha" 5
-#map_type "http://map.hirr.net/northernjb.jpg" "sirius" 5
+map_type "http://dl.dropbox.com/u/39006524/Clusterfuck-JB-Map.jpg" "clusterfuck" 4 1 "#ffffff" 1;
+
